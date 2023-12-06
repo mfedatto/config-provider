@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <RootNamespace>Agilize.ConfigProvider.WebApi</RootNamespace>
+        <RootNamespace>Fedatto.ConfigProvider.WebApi</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

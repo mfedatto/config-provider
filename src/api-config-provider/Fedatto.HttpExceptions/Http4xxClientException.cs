@@ -1,5 +1,6 @@
 namespace Fedatto.HttpExceptions;
 
+// ReSharper disable once InconsistentNaming
 public class Http4xxClientException : HttpException
 {
     private const string HttpExceptionMessage = "HTTP 400 - Bad Request.";

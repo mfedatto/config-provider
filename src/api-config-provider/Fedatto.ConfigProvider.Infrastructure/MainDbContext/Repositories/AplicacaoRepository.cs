@@ -1,4 +1,3 @@
-using Fedatto.HttpExceptions;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
@@ -101,7 +100,7 @@ public class AplicacaoRepository : IAplicacaoRepository
                 {
                     p_AppId = appId
                 }))
-            .SingleOrDefault<IAplicacao>()!;
+            .SingleOrDefault<IAplicacao>();
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorNome(
@@ -118,7 +117,7 @@ public class AplicacaoRepository : IAplicacaoRepository
                 {
                     p_Nome = nome.ToLower()
                 }))
-            .SingleOrDefault<IAplicacao>()!;
+            .SingleOrDefault<IAplicacao>();
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorSigla(
@@ -135,7 +134,7 @@ public class AplicacaoRepository : IAplicacaoRepository
                 {
                     p_Sigla = sigla.ToLower()
                 }))
-            .SingleOrDefault<IAplicacao>()!;
+            .SingleOrDefault<IAplicacao>();
     }
 
     public async Task AtualizarAplicacao(IAplicacao aplicacao)

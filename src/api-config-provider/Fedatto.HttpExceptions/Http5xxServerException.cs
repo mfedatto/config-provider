@@ -1,5 +1,6 @@
 namespace Fedatto.HttpExceptions;
 
+// ReSharper disable once InconsistentNaming
 public class Http5xxServerException : HttpException
 {
     private const string HttpExceptionMessage = "HTTP 500 - Server error.";

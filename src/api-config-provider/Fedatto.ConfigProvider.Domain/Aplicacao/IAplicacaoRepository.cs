@@ -19,7 +19,7 @@ public interface IAplicacaoRepository
     Task IncluirAplicacao(IAplicacao aplicacao);
     Task<IAplicacao?> BuscarAplicacaoPorId(Guid appId);
     Task<IAplicacao?> BuscarAplicacaoPorNome(string nome);
-    Task<IAplicacao> BuscarAplicacaoPorSigla(string sigla);
+    Task<IAplicacao?> BuscarAplicacaoPorSigla(string sigla);
     Task AtualizarAplicacao(IAplicacao aplicacao);
     Task ExcluirAplicacao(Guid appId);
 }
