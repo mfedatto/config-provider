@@ -1,0 +1,5 @@
+skinparam DefaultFontName monospaced
+skinparam DefaultFontSize 10
+
+header "\nConfig Provider API\n"
+footer "\nArquitetura | Agilize\n"

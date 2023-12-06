@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fedatto.ConfigProvider.Application\Fedatto.ConfigProvider.Application.csproj" />
+      <ProjectReference Include="..\Fedatto.ConfigProvider.Domain\Fedatto.ConfigProvider.Domain.csproj" />
+      <ProjectReference Include="..\Fedatto.ConfigProvider.Infrastructure\Fedatto.ConfigProvider.Infrastructure.csproj" />
+      <ProjectReference Include="..\Fedatto.ConfigProvider.Service\Fedatto.ConfigProvider.Service.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+      <PackageReference Include="SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="3.0.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    </ItemGroup>
+
+</Project>

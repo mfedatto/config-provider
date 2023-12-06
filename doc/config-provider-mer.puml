@@ -1,0 +1,150 @@
+@startuml config-provider-mer
+
+!include ./_puml/defaults.puml
+!include ./_puml/mer.puml
+
+title "Modelo Entidade Relacional\nAPI Config Provider\n"
+
+entity e_aplicacoes as "Aplicacoes" {
+    * AppId : uuid <<PK>>
+    --
+    * Nome : text
+    * Sigla : text
+    Aka : text
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_tipos as "Tipos" {
+    * Id : int <<PK>>
+    --
+    * Nome : text <<unique>>
+    * Habilitado : bool
+}
+
+entity e_chaves as "Chaves" {
+    * Id : int <<PK>>
+    --
+    * AppId : uuid <<FK>>
+    * Nome : text
+    * IdTipo : int <<FK>>
+    * Lista : bool
+    * PermiteNulo : bool
+    IdChavePai : int <<FK>>
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresNumeros as "ValoresNumeros" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : number
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresTextos as "ValoresTextos" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : text
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresTextosPaginados as "ValoresTextosPaginados" {
+    * Id : int <<PK>>
+    --
+    * IdValorText : int <<FK>>
+    * Valor : text
+    * Pagina : int
+}
+
+entity e_valoresLogicos as "ValoresLogicos" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : bool
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresDatas as "ValoresDatas" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : date
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresJson as "ValoresJson" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : text
+    Checksum : text
+    NumeroDePaginas : int
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresJsonPaginados as "ValoresJsonPaginados" {
+    * Id : int <<PK>>
+    --
+    * IdValorJson : int <<FK>>
+    * Valor : text
+    * Pagina : int
+}
+
+entity e_valoresBinariosBase64 as "ValoresBinariosBase64" {
+    * Id : int <<PK>>
+    --
+    * IdChave : int <<FK>>
+    * Valor : text
+    Checksum : text
+    NumeroDePaginas : int
+    --
+    * Habilitado : bool
+    VigenteDe : date
+    VigenteAte : date
+}
+
+entity e_valoresBinariosBase64Paginados as "ValoresBinariosBase64Paginados" {
+    * Id : int <<PK>>
+    --
+    * IdValorBinarioBase64 : int <<FK>>
+    * Valor : text
+    * Pagina : int
+}
+
+e_aplicacoes ||--|{ e_chaves
+e_tipos ||--|{ e_chaves
+e_chaves |o--|| e_chaves
+
+e_chaves ||--o{ e_valoresNumeros
+e_chaves ||--o{ e_valoresTextos
+e_valoresTextos |o--o{ e_valoresTextosPaginados
+e_chaves ||--o{ e_valoresJson
+e_valoresJson |o--o{ e_valoresJsonPaginados
+e_chaves ||--o{ e_valoresBinariosBase64
+e_valoresBinariosBase64 |o--o{ e_valoresBinariosBase64Paginados
+e_chaves ||--o{ e_valoresLogicos
+e_chaves ||--o{ e_valoresDatas
+
+@enduml
