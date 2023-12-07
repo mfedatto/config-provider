@@ -11,8 +11,10 @@ public static class Rotas
     public const string AplicacoesHeadAplicacao = $"{{{ArgumentosNomeados.AppId}}}";
     public const string Tipos = "tipos";
     public const string TiposGetTipos = "";
-    public const string TiposGetTipo = $"{{{ArgumentosNomeados.Id}}}";
+    public const string TiposGetTipo = $"{{{ArgumentosNomeados.IdTipo}}}";
     public const string Chaves = $"{Aplicacoes}/{{{ArgumentosNomeados.AppId}}}/chaves";
     public const string ChavesGetChaves = "";
-    public const string ChavesGetChave = $"{{{ArgumentosNomeados.Id}}}";
+    public const string ChavesGetChave = $"{{{ArgumentosNomeados.IdChave}}}";
+    public const string Valores = $"{Aplicacoes}/{{{ArgumentosNomeados.AppId}}}/chaves/{{{ArgumentosNomeados.IdChave}}}/valores";
+    public const string ValoresGetValores = "";
 }

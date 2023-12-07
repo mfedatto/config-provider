@@ -9,19 +9,16 @@ namespace Fedatto.ConfigProvider.WebApi.Controllers.Tipo;
 public class TipoController : Controller
 {
     private readonly ITipoApplication _application;
-    private readonly TipoFactory _factory;
 
     public TipoController(
-        ITipoApplication application,
-        TipoFactory factory)
+        ITipoApplication application)
     {
         _application = application;
-        _factory = factory;
     }
     
     [HttpGet(Rotas.TiposGetTipos)]
     public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_Index(
-        [FromQuery(Name = ArgumentosNomeados.Id)] int? id = null,
+        [FromQuery(Name = ArgumentosNomeados.IdTipo)] int? id = null,
         [FromQuery(Name = ArgumentosNomeados.Nome)] string? nome = null,
         [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool? habilitado = null,
         [FromQuery(Name = ArgumentosNomeados.Skip)] int? skip = 0,
@@ -38,7 +35,7 @@ public class TipoController : Controller
     
     [HttpGet(Rotas.TiposGetTipo)]
     public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_ById(
-        [FromRoute(Name = ArgumentosNomeados.Id)] int id)
+        [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
         return Ok((await _application.BuscarTipo(id))
             .ToGetResponseModel());

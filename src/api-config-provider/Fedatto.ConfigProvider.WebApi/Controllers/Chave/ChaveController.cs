@@ -31,13 +31,15 @@ public class ChaveController : Controller
         [FromQuery(Name = ArgumentosNomeados.Skip)] int? skip = 0,
         [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
     {
-        vigenteEm = vigenteEm ?? DateTime.Now;
+        if (!await _application.AplicacaoExiste(appId)) throw new AplicacaoNaoEncontradaException();
         
-        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
+        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
+        
+        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
         
         return Ok((await _application.BuscarChaves(
                 appId,
-                vigenteEm.Value,
+                vigenteEmEfetivo,
                 nome,
                 idTipo,
                 lista,
@@ -46,25 +48,25 @@ public class ChaveController : Controller
                 habilitado,
                 skip,
                 limit))
-            .Map<IChave, GetChaveResponseModel>(chave => chave.ToGetResponseModel()));
+            .Map(chave => chave.ToGetResponseModel()));
     }
     
     [HttpGet(Rotas.ChavesGetChave)]
     public async Task<ActionResult<GetChaveResponseModel>> Get_ById(
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
-        [FromRoute(Name = ArgumentosNomeados.Id)] int id,
+        [FromRoute(Name = ArgumentosNomeados.IdChave)] int id,
         [FromQuery(Name = ArgumentosNomeados.VigenteEm)] DateTime? vigenteEm)
     {
         if (!await _application.AplicacaoExiste(appId)) throw new AplicacaoNaoEncontradaException();
         
-        vigenteEm = vigenteEm ?? DateTime.Now;
+        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
         
-        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
+        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
         
         return Ok((await _application.BuscarChavePorId(
                 appId,
                 id,
-                vigenteEm.Value))
+                vigenteEmEfetivo))
             .ToGetResponseModel());
     }
 }
