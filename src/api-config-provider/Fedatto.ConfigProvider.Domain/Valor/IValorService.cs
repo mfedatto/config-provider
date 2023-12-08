@@ -1,3 +1,4 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
 
 namespace Fedatto.ConfigProvider.Domain.Valor;
@@ -8,10 +9,10 @@ public interface IValorService
         IChave chave,
         DateTime vigenteEm,
         bool habilitado = true);
-    Task<bool> AplicacaoExiste(
+    Task<IAplicacao?> BuscarAplicacaoPorId(
         Guid appId);
     Task<IChave> BuscarChavePorId(
-        Guid appId,
+        IAplicacao aplicacao,
         int idChave,
         DateTime vigenteEm);
 }

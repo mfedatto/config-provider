@@ -1,3 +1,5 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 
 namespace Fedatto.ConfigProvider.Domain.Valor;
@@ -5,14 +7,13 @@ namespace Fedatto.ConfigProvider.Domain.Valor;
 public interface IValorApplication
 {
     Task<IEnumerable<IValor<object>>> BuscarValores(
-        Guid appId,
-        int idChave,
+        IChave chave,
         DateTime vigenteEm,
         bool habilitado = true);
-    Task<bool> AplicacaoExiste(
+    Task<IAplicacao?> BuscarAplicacaoPorId(
         Guid appId);
-    Task<bool> ChaveExiste(
-        Guid appId,
+    Task<IChave?> ObterChavePorId(
+        IAplicacao aplicacao,
         int idChave,
         DateTime vigenteEm);
 }

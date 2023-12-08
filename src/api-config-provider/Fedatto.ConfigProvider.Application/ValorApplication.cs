@@ -1,3 +1,4 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Valor;
 using Fedatto.HttpExceptions;
@@ -15,35 +16,29 @@ public class ValorApplication : IValorApplication
     }
     
     public async Task<IEnumerable<IValor<object>>> BuscarValores(
-        Guid appId,
-        int idChave,
+        IChave chave,
         DateTime vigenteEm,
         bool habilitado = true)
     {
-        IChave chave = await _service.BuscarChavePorId(
-            appId,
-            idChave,
-            vigenteEm);
-
         return await _service.BuscarValores(
             chave,
             vigenteEm,
             habilitado);
     }
 
-    public async Task<bool> AplicacaoExiste(Guid appId)
+    public async Task<IAplicacao?> BuscarAplicacaoPorId(Guid appId)
     {
-        return await _service.AplicacaoExiste(appId);
+        return await _service.BuscarAplicacaoPorId(appId);
     }
 
-    public async Task<bool> ChaveExiste(
-        Guid appId,
+    public async Task<IChave?> ObterChavePorId(
+        IAplicacao aplicacao,
         int idChave,
         DateTime vigenteEm)
     {
-        return (await _service.BuscarChavePorId(
-            appId,
+        return await _service.BuscarChavePorId(
+            aplicacao,
             idChave,
-            vigenteEm)) is not null;
+            vigenteEm);
     }
 }

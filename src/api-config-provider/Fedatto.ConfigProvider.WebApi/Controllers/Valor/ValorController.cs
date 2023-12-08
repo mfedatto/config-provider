@@ -1,3 +1,5 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Valor;
 using Fedatto.ConfigProvider.Domain.Wrappers;
@@ -24,16 +26,19 @@ public class ValorController : Controller
         [FromQuery(Name = ArgumentosNomeados.VigenteEm)] DateTime? vigenteEm,
         [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool habilitado = true)
     {
-        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
+        IAplicacao? aplicacao = await _application.BuscarAplicacaoPorId(appId);
         
-        if (!await _application.AplicacaoExiste(appId)) throw new AplicacaoNaoEncontradaException();
-        if (!await _application.ChaveExiste(appId, idChave, vigenteEmEfetivo)) throw new ChaveNaoEncontradaException();
+        if (aplicacao is null) throw new AplicacaoNaoEncontradaException();
+        
+        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
+        IChave? chave = await _application.ObterChavePorId(aplicacao, idChave, vigenteEmEfetivo);
+        
+        if (chave is null) throw new ChaveNaoEncontradaException();
         
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
         
         return Ok((await _application.BuscarValores(
-                appId,
-                idChave,
+                chave,
                 vigenteEmEfetivo,
                 habilitado))
             .Select(valor => valor.ToGetResponseModel()));

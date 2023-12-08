@@ -27,24 +27,24 @@ public class AplicacaoRepository : IAplicacaoRepository
             SELECT *
             FROM Aplicacoes
             WHERE
-                (@p_Nome IS NULL OR LOWER(Nome) ~ @p_Nome) AND
-                (@p_Sigla IS NULL OR LOWER(Sigla) ~ @p_Sigla) AND
-                (@p_Aka IS NULL OR LOWER(Aka) ~ @p_Aka) AND
-                (@p_Habilitado IS NULL OR Habilitado = @p_Habilitado) AND
-                (@p_VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @p_VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @p_VigenteEm::date))
+                (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
+                (@Sigla IS NULL OR LOWER(Sigla) ~ @Sigla) AND
+                (@Aka IS NULL OR LOWER(Aka) ~ @Aka) AND
+                (@Habilitado IS NULL OR Habilitado = @Habilitado) AND
+                (@VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date))
             ORDER BY Nome
-            OFFSET @p_Skip
-            LIMIT @p_Limit;
+            OFFSET @Skip
+            LIMIT @Limit;
             """,
             new
             {
-                p_Nome = nome?.ToLower(),
-                p_Sigla = sigla?.ToLower(),
-                p_Aka = aka?.ToLower(),
-                p_Habilitado = habilitado,
-                p_VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss"),
-                p_Skip = skip,
-                p_Limit = limit
+                Nome = nome?.ToLower(),
+                Sigla = sigla?.ToLower(),
+                Aka = aka?.ToLower(),
+                Habilitado = habilitado,
+                VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss"),
+                Skip = skip,
+                Limit = limit
             });
     }
 
@@ -60,19 +60,19 @@ public class AplicacaoRepository : IAplicacaoRepository
             SELECT COUNT(*)
             FROM Aplicacoes
             WHERE
-                (@p_Nome IS NULL OR LOWER(Nome) ~ @p_Nome) AND
-                (@p_Sigla IS NULL OR LOWER(Sigla) ~ @p_Sigla) AND
-                (@p_Aka IS NULL OR LOWER(Aka) ~ @p_Aka) AND
-                (@p_Habilitado IS NULL OR Habilitado = @p_Habilitado) AND
-                (@p_VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @p_VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @p_VigenteEm::date));
+                (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
+                (@Sigla IS NULL OR LOWER(Sigla) ~ @Sigla) AND
+                (@Aka IS NULL OR LOWER(Aka) ~ @Aka) AND
+                (@Habilitado IS NULL OR Habilitado = @Habilitado) AND
+                (@VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @p_VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date));
             """,
             new
             {
-                p_Nome = nome?.ToLower(),
-                p_Sigla = sigla?.ToLower(),
-                p_Aka = aka?.ToLower(),
-                p_Habilitado = habilitado,
-                p_VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss")
+                Nome = nome?.ToLower(),
+                Sigla = sigla?.ToLower(),
+                Aka = aka?.ToLower(),
+                Habilitado = habilitado,
+                VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss")
             });
     }
 
@@ -95,11 +95,11 @@ public class AplicacaoRepository : IAplicacaoRepository
                 SELECT *
                 FROM Aplicacoes
                 WHERE
-                    AppId = @p_AppId::uuid;
+                    AppId = @AppId::uuid;
                 """,
                 new
                 {
-                    p_AppId = appId
+                    AppId = appId
                 }))
             .SingleOrDefault<IAplicacao>();
     }
@@ -112,11 +112,11 @@ public class AplicacaoRepository : IAplicacaoRepository
                 SELECT *
                 FROM Aplicacoes
                 WHERE
-                    LOWER(Nome) = @p_Nome;
+                    LOWER(Nome) = @Nome;
                 """,
                 new
                 {
-                    p_Nome = nome.ToLower()
+                    Nome = nome.ToLower()
                 }))
             .SingleOrDefault<IAplicacao>();
     }
@@ -129,11 +129,11 @@ public class AplicacaoRepository : IAplicacaoRepository
                 SELECT *
                 FROM Aplicacoes
                 WHERE
-                    LOWER(Sigla) = @p_Sigla;
+                    LOWER(Sigla) = @Sigla;
                 """,
                 new
                 {
-                    p_Sigla = sigla.ToLower()
+                    Sigla = sigla.ToLower()
                 }))
             .SingleOrDefault<IAplicacao>();
     }
@@ -164,18 +164,18 @@ public class AplicacaoRepository : IAplicacaoRepository
             """,
             new
             {
-                appId
+                AppId = appId
             });
     }
 }
 
 file record Aplicacao : IAplicacao
 {
-    public Guid AppId { get; set; }
-    public required string Nome { get; set; }
-    public required string Sigla { get; set; }
-    public string? Aka { get; set; }
-    public bool Habilitado { get; set; }
-    public DateTime VigenteDe { get; set; }
-    public DateTime VigenteAte { get; set; }
+    public Guid AppId { get; init; }
+    public required string Nome { get; init; }
+    public required string Sigla { get; init; }
+    public string? Aka { get; init; }
+    public bool Habilitado { get; init; }
+    public DateTime VigenteDe { get; init; }
+    public DateTime VigenteAte { get; init; }
 }

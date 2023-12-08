@@ -38,18 +38,18 @@ public class ValorService : IValorService
         };
     }
 
-    public async Task<bool> AplicacaoExiste(Guid appId)
+    public async Task<IAplicacao?> BuscarAplicacaoPorId(Guid appId)
     {
-        return (await _aplicacaoRepository.BuscarAplicacaoPorId(appId)) is not null;
+        return await _aplicacaoRepository.BuscarAplicacaoPorId(appId);
     }
 
     public async Task<IChave> BuscarChavePorId(
-        Guid appId,
+        IAplicacao aplicacao,
         int idChave,
         DateTime vigenteEm)
     {
         return await _chaveRepository.BuscarChavePorId(
-            appId,
+            aplicacao,
             idChave,
             vigenteEm);
     }
