@@ -3,27 +3,27 @@ namespace Fedatto.ConfigProvider.Domain.Valor;
 public interface IValorRepository
 {
     Task<IEnumerable<IValor<object>>> BuscarValoresDouble(
-        int chaveId,
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
     Task<IEnumerable<IValor<object>>> BuscarValoresString(
-        int chaveId,
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
     Task<IEnumerable<IValor<object>>> BuscarValoresBool(
-        int chaveId,
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
-    Task<IEnumerable<IValor<object>>> BuscarValoresDateTime(
-        int chaveId,
+    Task<IEnumerable<IValor<object>>> BuscarValoresDatas(
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
     Task<IEnumerable<IValor<object>>> BuscarValoresJson(
-        int chaveId,
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
     Task<IEnumerable<IValor<object>>> BuscarValoresBinaryB64(
-        int chaveId,
+        int idChave,
         DateTime vigenteEm,
         bool habilitado);
 }

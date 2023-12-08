@@ -82,6 +82,7 @@ public class AplicacaoRepository : IAplicacaoRepository
             """
             INSERT INTO Aplicacoes (AppId, Nome, Sigla, Aka, Habilitado, VigenteDe, VigenteAte)
             VALUES (@AppId, @Nome, @Sigla, @Aka, @Habilitado, @VigenteDe, @VigenteAte)
+            RETURNING *;
             """,
             aplicacao);
     }

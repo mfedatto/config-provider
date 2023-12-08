@@ -72,4 +72,10 @@ public class ChaveApplication : IChaveApplication
             id,
             vigenteEm);
     }
+
+    public async Task<IChave> IncluirChave(
+        IChave chave)
+    {
+        return await _service.IncluirChave(chave);
+    }
 }

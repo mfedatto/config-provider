@@ -84,4 +84,10 @@ public class ChaveService : IChaveService
 
         return result;
     }
+    
+    public async Task<IChave> IncluirChave(
+        IChave chave)
+    {
+        return await _repository.IncluirChave(chave);
+    }
 }

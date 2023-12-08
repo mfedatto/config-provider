@@ -17,9 +17,7 @@ public class TipoRepository : ITipoRepository
     public async Task<IEnumerable<ITipo>> BuscarTipos(
         int? id = null,
         string? nome = null,
-        bool? habilitado = null,
-        int? skip = 0,
-        int? limit = null)
+        bool? habilitado = null)
     {
         return await _uow.DbConnection.QueryAsync<Tipo>(
             """
@@ -29,17 +27,13 @@ public class TipoRepository : ITipoRepository
                 (@p_Id IS NULL OR Id = @p_Id) AND
                 (@p_Nome IS NULL OR LOWER(Nome) ~ @p_Nome) AND
                 (@p_Habilitado IS NULL OR Habilitado = @p_Habilitado)
-            ORDER BY Nome
-            OFFSET @p_Skip
-            LIMIT @p_Limit;
+            ORDER BY Nome;
             """,
             new
             {
                 p_Id = id,
                 p_Nome = nome?.ToLower(),
-                p_Habilitado = habilitado,
-                p_Skip = skip,
-                p_Limit = limit
+                p_Habilitado = habilitado
             });
     }
 

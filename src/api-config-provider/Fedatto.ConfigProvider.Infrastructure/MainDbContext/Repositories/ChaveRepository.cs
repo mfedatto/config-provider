@@ -121,6 +121,19 @@ public class ChaveRepository : IChaveRepository
                 }))
             .SingleOrDefault<IChave>()!;
     }
+    
+    public async Task<IChave> IncluirChave(
+        IChave chave)
+    {
+        return (await _uow.DbConnection.QueryAsync<Chave>(
+            """
+            INSERT INTO Chave (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
+            VALUES (@AppId, @Nome, @IdTipo, @Lista, @PermiteNulo, @IdChavePai, @Habilitado, @VigenteDe, @VigenteAte)
+            RETURNING *;
+            """,
+            chave))
+            .SingleOrDefault()!;
+    }
 }
 
 file record Chave : IChave

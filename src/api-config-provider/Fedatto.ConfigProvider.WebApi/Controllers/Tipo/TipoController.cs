@@ -17,20 +17,16 @@ public class TipoController : Controller
     }
     
     [HttpGet(Rotas.TiposGetTipos)]
-    public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_Index(
+    public async Task<ActionResult<IEnumerable<GetTipoResponseModel>>> Get_Index(
         [FromQuery(Name = ArgumentosNomeados.IdTipo)] int? id = null,
         [FromQuery(Name = ArgumentosNomeados.Nome)] string? nome = null,
-        [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool? habilitado = null,
-        [FromQuery(Name = ArgumentosNomeados.Skip)] int? skip = 0,
-        [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
+        [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool? habilitado = null)
     {
         return Ok((await _application.BuscarTipos(
                 id,
                 nome,
-                habilitado,
-                skip,
-                limit))
-            .Map(tipo => tipo.ToGetResponseModel()));
+                habilitado))
+            .Select(tipo => tipo.ToGetResponseModel()));
     }
     
     [HttpGet(Rotas.TiposGetTipo)]

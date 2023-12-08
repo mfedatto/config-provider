@@ -26,4 +26,6 @@ public interface IChaveService
         Guid appId,
         int id,
         DateTime vigenteEm);
+    Task<IChave> IncluirChave(
+        IChave chave);
 }

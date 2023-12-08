@@ -31,7 +31,7 @@ public class ValorService : IValorService
             3 => await _repository.BuscarValoresDouble(chave.Id, vigenteEm, habilitado),
             5 => await _repository.BuscarValoresString(chave.Id, vigenteEm, habilitado),
             7 => await _repository.BuscarValoresBool(chave.Id, vigenteEm, habilitado),
-            11 => await _repository.BuscarValoresDateTime(chave.Id, vigenteEm, habilitado),
+            11 => await _repository.BuscarValoresDatas(chave.Id, vigenteEm, habilitado),
             13 => await _repository.BuscarValoresJson(chave.Id, vigenteEm, habilitado),
             17 => await _repository.BuscarValoresBinaryB64(chave.Id, vigenteEm, habilitado),
             _ => throw new Http501NaoImplementadoException()

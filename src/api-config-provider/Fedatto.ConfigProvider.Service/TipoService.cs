@@ -17,9 +17,7 @@ public class TipoService : ITipoService
     public async Task<IEnumerable<ITipo>> BuscarTipos(
         int? id = null,
         string? nome = null,
-        bool? habilitado = null,
-        int? skip = 0,
-        int? limit = null)
+        bool? habilitado = null)
     {
         return await _repository.BuscarTipos(
             id,
@@ -30,16 +28,13 @@ public class TipoService : ITipoService
     public async Task<int> ContarTipos(
         int? id = null,
         string? nome = null,
-        bool? habilitado = null,
-        int? skip = 0,
-        int? limit = null)
+        bool? habilitado = null)
     {
         return await _repository.ContarTipos(
             id,
             nome,
             habilitado);
     }
-    
 
     public async Task<ITipo> BuscarTipo(int id)
     {

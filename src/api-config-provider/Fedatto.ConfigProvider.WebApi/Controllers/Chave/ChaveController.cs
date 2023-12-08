@@ -1,4 +1,3 @@
-using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Wrappers;
@@ -11,11 +10,14 @@ namespace Fedatto.ConfigProvider.WebApi.Controllers.Chave;
 public class ChaveController : Controller
 {
     private readonly IChaveApplication _application;
+    private readonly ChaveFactory _factory;
 
     public ChaveController(
-        IChaveApplication application)
+        IChaveApplication application,
+        ChaveFactory factory)
     {
         _application = application;
+        _factory = factory;
     }
     
     [HttpGet(Rotas.ChavesGetChaves)]
@@ -49,6 +51,16 @@ public class ChaveController : Controller
                 skip,
                 limit))
             .Map(chave => chave.ToGetResponseModel()));
+    }
+    
+    [HttpPost(Rotas.AplicacoesPostAplicacao)]
+    public async Task<ActionResult<PostChaveResponseModel>> Post_Index(
+        [FromBody] PostChaveRequestModel requestModel)
+    {
+        IChave chave = _factory.ToEntity(requestModel);
+        
+        return Ok((await _application.IncluirChave(chave))
+            .ToPostResponseModel());
     }
     
     [HttpGet(Rotas.ChavesGetChave)]

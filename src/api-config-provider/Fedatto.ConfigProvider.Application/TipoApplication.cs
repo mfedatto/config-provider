@@ -14,27 +14,22 @@ public class TipoApplication : ITipoApplication
         _service = service;
     }
     
-    public async Task<PagedListWrapper<ITipo>> BuscarTipos(
+    public async Task<IEnumerable<ITipo>> BuscarTipos(
         int? id = null,
         string? nome = null,
-        bool? habilitado = null,
-        int? skip = 0,
-        int? limit = null)
+        bool? habilitado = null)
     {
         int total = await _service.ContarTipos(
             id,
             nome,
             habilitado);
 
-        if (0.Equals(total)) return Enumerable.Empty<ITipo>().WrapUp();
+        if (0.Equals(total)) return Enumerable.Empty<ITipo>();
         
-        return (await _service.BuscarTipos(
-                id,
-                nome,
-                habilitado,
-                skip,
-                limit))
-            .WrapUp(skip ?? 0, limit, total);
+        return await _service.BuscarTipos(
+            id,
+            nome,
+            habilitado);
     }
 
     public async Task<ITipo> BuscarTipo(int id)
