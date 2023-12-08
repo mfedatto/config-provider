@@ -7,26 +7,18 @@ public class TipoFactory
         string nome,
         bool habilitado)
     {
-        return new Tipo(
-            id,
-            nome,
-            habilitado);
+        return new Tipo
+        {
+            Id = id,
+            Nome = nome,
+            Habilitado = habilitado
+        };
     }
 }
 
 file struct Tipo : ITipo
 {
     public int Id { get; init; }
-    public string Nome { get; init; }
+    public required string Nome { get; init; }
     public bool Habilitado { get; init; }
-
-    public Tipo(
-        int id,
-        string nome,
-        bool habilitado)
-    {
-        Id = id;
-        Nome = nome;
-        Habilitado = habilitado;
-    }
 }

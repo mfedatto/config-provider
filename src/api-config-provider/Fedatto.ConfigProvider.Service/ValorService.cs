@@ -26,7 +26,7 @@ public class ValorService : IValorService
         DateTime vigenteEm,
         bool habilitado = true)
     {
-        return chave.IdTipo switch
+        return chave.Tipo.Id switch
         {
             3 => await _repository.BuscarValoresDouble(chave.Id, vigenteEm, habilitado),
             5 => await _repository.BuscarValoresString(chave.Id, vigenteEm, habilitado),

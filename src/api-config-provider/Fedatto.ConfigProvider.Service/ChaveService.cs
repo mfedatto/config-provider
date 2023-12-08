@@ -2,6 +2,7 @@ using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
+using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.Service;
 
@@ -16,10 +17,10 @@ public class ChaveService : IChaveService
     }
     
     public async Task<IEnumerable<IChave>> BuscarChaves(
-        Guid appId,
+        IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
-        int? idTipo = null,
+        ITipo? tipo = null,
         bool? lista = null,
         bool? permiteNulo = null,
         int? idChavePai = null,
@@ -28,10 +29,10 @@ public class ChaveService : IChaveService
         int? limit = null)
     {
         return await _repository.BuscarChaves(
-            appId,
+            aplicacao,
             vigenteEm,
             nome,
-            idTipo,
+            tipo,
             lista,
             permiteNulo,
             idChavePai,
@@ -41,20 +42,20 @@ public class ChaveService : IChaveService
     }
 
     public async Task<int> ContarChaves(
-        Guid appId,
+        IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
-        int? idTipo = null,
+        ITipo? tipo = null,
         bool? lista = null,
         bool? permiteNulo = null,
         int? idChavePai = null,
         bool habilitado = true)
     {
         return await _repository.ContarChaves(
-            appId,
+            aplicacao,
             vigenteEm,
             nome,
-            idTipo,
+            tipo,
             lista,
             permiteNulo,
             idChavePai,
@@ -62,7 +63,7 @@ public class ChaveService : IChaveService
     }
 
     public async Task<IChave> BuscarChavePorId(
-        Guid appId,
+        IAplicacao aplicacao,
         int id,
         DateTime vigenteEm)
     {
@@ -71,7 +72,7 @@ public class ChaveService : IChaveService
         try
         {
             result =  await _repository.BuscarChavePorId(
-                appId,
+                aplicacao,
                 id,
                 vigenteEm);
             

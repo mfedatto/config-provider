@@ -36,7 +36,7 @@ public class TipoService : ITipoService
             habilitado);
     }
 
-    public async Task<ITipo> BuscarTipo(int id)
+    public async Task<ITipo> BuscarTipoPorId(int id)
     {
         ITipo? result;
         

@@ -15,6 +15,9 @@ public static class Rotas
     public const string Chaves = $"{Aplicacoes}/{{{ArgumentosNomeados.AppId}}}/chaves";
     public const string ChavesGetChaves = "";
     public const string ChavesGetChave = $"{{{ArgumentosNomeados.IdChave}}}";
+    public const string ChavesPostChave = $"";
+    public const string ChavesPutChave = $"{{{ArgumentosNomeados.IdChave}}}";
+    public const string ChavesDeleteChave = $"{{{ArgumentosNomeados.IdChave}}}";
     public const string Valores = $"{Aplicacoes}/{{{ArgumentosNomeados.AppId}}}/chaves/{{{ArgumentosNomeados.IdChave}}}/valores";
     public const string ValoresGetValores = "";
 }

@@ -1,12 +1,15 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Tipo;
+
 namespace Fedatto.ConfigProvider.Domain.Chave;
 
 public class ChaveFactory
 {
     public IChave Create(
         int id,
-        Guid appId,
+        IAplicacao aplicacao,
         string nome,
-        int idTipo,
+        ITipo tipo,
         bool lista,
         bool permiteNulo,
         int? idChavePai,
@@ -17,9 +20,9 @@ public class ChaveFactory
         return new Chave
         {
             Id = id,
-            AppId = appId,
+            Aplicacao = aplicacao,
             Nome = nome,
-            IdTipo = idTipo,
+            Tipo = tipo,
             Lista = lista,
             PermiteNulo = permiteNulo,
             IdChavePai = idChavePai,
@@ -30,12 +33,12 @@ public class ChaveFactory
     }
 }
 
-file struct Chave : IChave
+file record Chave : IChave
 {
     public int Id { get; init; }
-    public Guid AppId { get; init; }
+    public IAplicacao Aplicacao { get; init; }
     public string Nome { get; init; }
-    public int IdTipo { get; init; }
+    public ITipo Tipo { get; init; }
     public bool Lista { get; init; }
     public bool PermiteNulo { get; init; }
     public int? IdChavePai { get; init; }

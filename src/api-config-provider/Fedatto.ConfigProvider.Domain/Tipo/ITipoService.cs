@@ -10,5 +10,5 @@ public interface ITipoService
         int? id = null,
         string? nome = null,
         bool? habilitado = null);
-    Task<ITipo> BuscarTipo(int id);
+    Task<ITipo> BuscarTipoPorId(int id);
 }

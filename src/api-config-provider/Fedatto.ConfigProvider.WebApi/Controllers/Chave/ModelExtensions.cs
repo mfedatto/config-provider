@@ -1,17 +1,20 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
+using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Chave;
 
 public static class ModelExtensions
 {
-    public static GetChaveResponseModel ToGetResponseModel(this IChave chave)
+    public static GetChaveResponseModel ToGetResponseModel(
+        this IChave chave)
     {
         return new GetChaveResponseModel
         {
             Id = chave.Id,
-            AppId = chave.AppId,
+            AppId = chave.Aplicacao.AppId,
             Nome = chave.Nome,
-            IdTipo = chave.IdTipo,
+            IdTipo = chave.Tipo.Id,
             Lista = chave.Lista,
             PermiteNulo = chave.PermiteNulo,
             IdChavePai = chave.IdChavePai,
@@ -19,13 +22,17 @@ public static class ModelExtensions
         };
     }
 
-    public static IChave ToEntity(this ChaveFactory factory, PostChaveRequestModel requestModel)
+    public static IChave ToEntity(
+        this ChaveFactory factory,
+        PostChaveRequestModel requestModel,
+        IAplicacao aplicacao,
+        ITipo tipo)
     {
         return factory.Create(
             -1,
-            requestModel.AppId,
+            aplicacao,
             requestModel.Nome,
-            requestModel.IdTipo,
+            tipo,
             requestModel.Lista,
             requestModel.PermiteNulo,
             requestModel.IdChavePai,
@@ -34,14 +41,15 @@ public static class ModelExtensions
             requestModel.VigenteAte);
     }
     
-    public static PostChaveResponseModel ToPostResponseModel(this IChave chave)
+    public static PostChaveResponseModel ToPostResponseModel(
+        this IChave chave)
     {
         return new PostChaveResponseModel
         {
             Id = chave.Id,
-            AppId = chave.AppId,
+            AppId = chave.Aplicacao.AppId,
             Nome = chave.Nome,
-            IdTipo = chave.IdTipo,
+            IdTipo = chave.Tipo.Id,
             Lista = chave.Lista,
             PermiteNulo = chave.PermiteNulo,
             IdChavePai = chave.IdChavePai,

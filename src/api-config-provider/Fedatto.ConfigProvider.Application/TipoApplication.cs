@@ -34,6 +34,6 @@ public class TipoApplication : ITipoApplication
 
     public async Task<ITipo> BuscarTipo(int id)
     {
-        return await _service.BuscarTipo(id);
+        return await _service.BuscarTipoPorId(id);
     }
 }

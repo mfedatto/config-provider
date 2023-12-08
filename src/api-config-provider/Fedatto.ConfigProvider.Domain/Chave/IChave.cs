@@ -1,11 +1,14 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Tipo;
+
 namespace Fedatto.ConfigProvider.Domain.Chave;
 
 public interface IChave
 {
     int Id { get; }
-    Guid AppId { get; }
+    IAplicacao Aplicacao { get; }
     string Nome { get; }
-    int IdTipo { get; }
+    ITipo Tipo { get; }
     bool Lista { get; }
     bool PermiteNulo { get; }
     int? IdChavePai { get; }

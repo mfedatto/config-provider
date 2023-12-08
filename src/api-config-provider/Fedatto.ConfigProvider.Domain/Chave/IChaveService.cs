@@ -1,12 +1,15 @@
+using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Tipo;
+
 namespace Fedatto.ConfigProvider.Domain.Chave;
 
 public interface IChaveService
 {
     Task<IEnumerable<IChave>> BuscarChaves(
-        Guid appId,
+        IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
-        int? idTipo = null,
+        ITipo? tipo = null,
         bool? lista = null,
         bool? permiteNulo = null,
         int? idChavePai = null,
@@ -14,16 +17,16 @@ public interface IChaveService
         int? skip = 0,
         int? limit = null);
     Task<int> ContarChaves(
-        Guid appId,
+        IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
-        int? idTipo = null,
+        ITipo? tipo = null,
         bool? lista = null,
         bool? permiteNulo = null,
         int? idChavePai = null,
         bool habilitado = true);
     Task<IChave> BuscarChavePorId(
-        Guid appId,
+        IAplicacao aplicacao,
         int id,
         DateTime vigenteEm);
     Task<IChave> IncluirChave(
