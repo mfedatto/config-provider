@@ -32,7 +32,7 @@ public class TipoApplication : ITipoApplication
             habilitado);
     }
 
-    public async Task<ITipo> BuscarTipo(int id)
+    public async Task<ITipo> BuscarTipoPorId(int id)
     {
         return await _service.BuscarTipoPorId(id);
     }

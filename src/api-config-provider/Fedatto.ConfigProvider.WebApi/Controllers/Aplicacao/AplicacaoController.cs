@@ -71,8 +71,9 @@ public class AplicacaoController : Controller
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
         [FromBody] PutAplicacaoRequestModel requestModel)
     {
-        if ((await _application.BuscarAplicacaoPorId(appId).ConfigureAwait(false)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _application.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
+            .ConfigureAwait(false);
         
         IAplicacao aplicacao = _factory.ToEntity(requestModel, appId);
         
@@ -85,8 +86,9 @@ public class AplicacaoController : Controller
     public async Task<ActionResult> Delete_ById(
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        if ((await _application.BuscarAplicacaoPorId(appId).ConfigureAwait(false)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _application.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
+            .ConfigureAwait(false);
         
         await _application.ExcluirAplicacao(appId);
         
@@ -97,8 +99,9 @@ public class AplicacaoController : Controller
     public async Task<ActionResult> Head_ById(
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        if ((await _application.BuscarAplicacaoPorId(appId).ConfigureAwait(false)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _application.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
+            .ConfigureAwait(false);
         
         return Ok();
     }

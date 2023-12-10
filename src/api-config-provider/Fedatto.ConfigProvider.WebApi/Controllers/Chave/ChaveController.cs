@@ -36,11 +36,13 @@ public class ChaveController : Controller
         [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
     {
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)
-            .ThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         ITipo? tipo = idTipo is null
             ? null
             : await _application.BuscarTipoPorId(idTipo.Value)
-                .ThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => !result.Habilitado);
+                .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)
+                .ConfigureAwait(false);
 
         DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
         
@@ -65,9 +67,11 @@ public class ChaveController : Controller
         [FromBody] PostChaveRequestModel requestModel)
     {
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(requestModel.AppId)
-            .ThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         ITipo tipo = await _application.BuscarTipoPorId(requestModel.IdTipo)
-            .ThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         
         IChave chave = _factory.ToEntity(
             requestModel,
@@ -85,16 +89,19 @@ public class ChaveController : Controller
         [FromQuery(Name = ArgumentosNomeados.VigenteEm)] DateTime? vigenteEm)
     {
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)
-            .ThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         
-        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
+        vigenteEm = vigenteEm ?? DateTime.Now;
         
-        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
+        Response.Headers.Append(
+            CabecalhosNomeados.VigenteEm,
+            vigenteEm.Value.ToString("yyyy-MM-dd"));
         
         return Ok((await _application.BuscarChavePorId(
                 aplicacao,
                 id,
-                vigenteEmEfetivo))
+                vigenteEm.Value))
             .ToGetResponseModel());
     }
     
@@ -103,9 +110,11 @@ public class ChaveController : Controller
         [FromBody] PostChaveRequestModel requestModel)
     {
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(requestModel.AppId)
-            .ThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         ITipo tipo = await _application.BuscarTipoPorId(requestModel.IdTipo)
-            .ThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => !result.Habilitado);
+            .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)
+            .ConfigureAwait(false);
 
         IChave chave = _factory.ToEntity(
             requestModel,

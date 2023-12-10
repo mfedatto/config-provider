@@ -2,7 +2,7 @@ namespace Fedatto.ConfigProvider.Domain.Exceptions;
 
 public static class ExceptionsExtensions
 {
-    public static async Task<TResult> ThrowIfNull<TResult, TException>(
+    public static async Task<TResult> ThenThrowIfNull<TResult, TException>(
         this Task<TResult> task)
         where TException : Exception, new()
     {
@@ -13,16 +13,16 @@ public static class ExceptionsExtensions
         return result;
     }
     
-    public static async Task<TResult> ThrowIfNullOrUnavailable<TResult, TException>(
+    public static async Task<TResult> ThenThrowIfNullOrUnavailable<TResult, TException>(
         this Task<TResult> task,
         Func<TResult, bool> available)
         where TException : Exception, new()
     {
         TResult result = await task
-            .ThrowIfNull<TResult, TException>()
+            .ThenThrowIfNull<TResult, TException>()
             .ConfigureAwait(false);
         
-        if (available(result)) throw new TException();
+        if (!available(result)) throw new TException();
 
         return result;
     }

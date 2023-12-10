@@ -12,6 +12,7 @@ public static class Rotas
     public const string Tipos = "tipos";
     public const string TiposGetTipos = "";
     public const string TiposGetTipo = $"{{{ArgumentosNomeados.IdTipo}}}";
+    public const string TiposHeadTipo = $"{{{ArgumentosNomeados.IdTipo}}}";
     public const string Chaves = $"{Aplicacoes}/{{{ArgumentosNomeados.AppId}}}/chaves";
     public const string ChavesGetChaves = "";
     public const string ChavesGetChave = $"{{{ArgumentosNomeados.IdChave}}}";

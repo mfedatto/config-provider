@@ -1,3 +1,4 @@
+using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.ConfigProvider.WebApi.Constants;
@@ -33,7 +34,18 @@ public class TipoController : Controller
     public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_ById(
         [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
-        return Ok((await _application.BuscarTipo(id))
+        return Ok((await _application.BuscarTipoPorId(id))
             .ToGetResponseModel());
+    }
+    
+    [HttpHead(Rotas.TiposHeadTipo)]
+    public async Task<ActionResult> Head_ById(
+        [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
+    {
+        await _application.BuscarTipoPorId(id)
+            .ThenThrowIfNull<ITipo, TipoNaoEncontradoException>()
+            .ConfigureAwait(false);
+        
+        return Ok();
     }
 }
