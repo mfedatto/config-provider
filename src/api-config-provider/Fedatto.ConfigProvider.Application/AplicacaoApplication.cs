@@ -15,6 +15,7 @@ public class AplicacaoApplication : IAplicacaoApplication
     }
     
     public async Task<PagedListWrapper<IAplicacao>> BuscarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
@@ -43,28 +44,36 @@ public class AplicacaoApplication : IAplicacaoApplication
             .WrapUp(skip ?? 0, limit, total);
     }
     
-    public async Task IncluirAplicacao(IAplicacao aplicacao)
+    public async Task IncluirAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
         await _service.IncluirAplicacao(aplicacao);
     }
     
-    public async Task<IAplicacao> BuscarAplicacaoPorId(Guid appId)
+    public async Task<IAplicacao> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
         return await _service.BuscarAplicacaoPorId(appId);
     }
     
-    public async Task AtualizarAplicacao(IAplicacao aplicacao)
+    public async Task AtualizarAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
-        if ((await _service.BuscarAplicacaoPorId(aplicacao.AppId)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _service.BuscarAplicacaoPorId(aplicacao.AppId)
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
         await _service.AtualizarAplicacao(aplicacao);
     }
     
-    public async Task ExcluirAplicacao(Guid appId)
+    public async Task ExcluirAplicacao(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
-        if ((await _service.BuscarAplicacaoPorId(appId)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _service.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
         await _service.ExcluirAplicacao(appId);
     }

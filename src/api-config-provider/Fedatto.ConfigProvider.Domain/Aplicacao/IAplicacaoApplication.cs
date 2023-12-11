@@ -5,6 +5,7 @@ namespace Fedatto.ConfigProvider.Domain.Aplicacao;
 public interface IAplicacaoApplication
 {
     Task<PagedListWrapper<IAplicacao>> BuscarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
@@ -12,8 +13,16 @@ public interface IAplicacaoApplication
         DateTime? vigenteEm = null,
         int? skip = 0,
         int? limit = null);
-    Task IncluirAplicacao(IAplicacao aplicacao);
-    Task<IAplicacao> BuscarAplicacaoPorId(Guid appId);
-    Task AtualizarAplicacao(IAplicacao aplicacao);
-    Task ExcluirAplicacao(Guid appId);
+    Task IncluirAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao);
+    Task<IAplicacao> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
+        Guid appId);
+    Task AtualizarAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao);
+    Task ExcluirAplicacao(
+        CancellationToken cancellationToken,
+        Guid appId);
 }

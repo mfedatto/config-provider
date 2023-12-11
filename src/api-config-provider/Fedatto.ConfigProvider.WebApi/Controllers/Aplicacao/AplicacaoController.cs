@@ -19,9 +19,10 @@ public class AplicacaoController : Controller
         _application = application;
         _factory = factory;
     }
-    
+
     [HttpGet(Rotas.AplicacoesGetAplicacoes)]
     public async Task<ActionResult<PagedListWrapper<GetAplicacaoResponseModel>>> Get_Index(
+        CancellationToken cancellationToken,
         [FromQuery(Name = ArgumentosNomeados.Nome)] string? nome = null,
         [FromQuery(Name = ArgumentosNomeados.Sigla)] string? sigla = null,
         [FromQuery(Name = ArgumentosNomeados.Aka)] string? aka = null,
@@ -31,78 +32,98 @@ public class AplicacaoController : Controller
         [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
     {
         vigenteEm = vigenteEm ?? DateTime.Now;
-        
+
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
 
         return Ok((await _application.BuscarAplicacoes(
-            nome,
-            sigla,
-            aka,
-            habilitado,
-            vigenteEm,
-            skip,
-            limit)
+                    cancellationToken,
+                    nome,
+                    sigla,
+                    aka,
+                    habilitado,
+                    vigenteEm,
+                    skip,
+                    limit)
                 .ConfigureAwait(false))
             .Map(aplicacao => aplicacao.ToGetResponseModel()));
     }
-    
+
     [HttpPost(Rotas.AplicacoesPostAplicacao)]
     public async Task<ActionResult<PostAplicacaoResponseModel>> Post_Index(
+        CancellationToken cancellationToken,
         [FromBody] PostAplicacaoRequestModel requestModel)
     {
         IAplicacao aplicacao = _factory.ToEntity(requestModel);
-        
-        await _application.IncluirAplicacao(aplicacao);
-        
+
+        await _application.IncluirAplicacao(
+            cancellationToken,
+            aplicacao);
+
         return Ok(aplicacao.ToPostResponseModel());
     }
-    
+
     [HttpGet(Rotas.AplicacoesGetAplicacao)]
     public async Task<ActionResult<GetAplicacaoResponseModel>> Get_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        return Ok((await _application.BuscarAplicacaoPorId(appId)
+        return Ok((await _application.BuscarAplicacaoPorId(
+                    cancellationToken,
+                    appId)
                 .ConfigureAwait(false))
             .ToGetResponseModel());
     }
-    
+
     [HttpPut(Rotas.AplicacoesPutAplicacao)]
     public async Task<ActionResult> Put_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
         [FromBody] PutAplicacaoRequestModel requestModel)
     {
-        await _application.BuscarAplicacaoPorId(appId)
+        await _application.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
             .ConfigureAwait(false);
-        
+
         IAplicacao aplicacao = _factory.ToEntity(requestModel, appId);
-        
-        await _application.AtualizarAplicacao(aplicacao);
-        
+
+        await _application.AtualizarAplicacao(
+            cancellationToken,
+            aplicacao);
+
         return Ok();
     }
-    
+
     [HttpDelete(Rotas.AplicacoesDeleteAplicacao)]
     public async Task<ActionResult> Delete_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        await _application.BuscarAplicacaoPorId(appId)
+        await _application.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
             .ConfigureAwait(false);
-        
-        await _application.ExcluirAplicacao(appId);
-        
+
+        await _application.ExcluirAplicacao(
+            cancellationToken,
+            appId);
+
         return Ok();
     }
-    
+
     [HttpHead(Rotas.AplicacoesHeadAplicacao)]
     public async Task<ActionResult> Head_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        await _application.BuscarAplicacaoPorId(appId)
+        await _application.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
             .ConfigureAwait(false);
-        
+
         return Ok();
     }
 }
