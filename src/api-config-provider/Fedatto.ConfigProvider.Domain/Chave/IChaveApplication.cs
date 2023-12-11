@@ -7,6 +7,7 @@ namespace Fedatto.ConfigProvider.Domain.Chave;
 public interface IChaveApplication
 {
     Task<PagedListWrapper<IChave>> BuscarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -17,12 +18,23 @@ public interface IChaveApplication
         bool habilitado = true,
         int? skip = 0,
         int? limit = null);
-    Task<IAplicacao> BuscarAplicacaoPorId(Guid appId);
-    Task<ITipo> BuscarTipoPorId(int id);
+    Task<IAplicacao> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
+        Guid appId);
+    Task<ITipo> BuscarTipoPorId(
+        CancellationToken cancellationToken,
+        int id);
     Task<IChave> BuscarChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id);
-    Task<IChave> IncluirChave(IChave chave);
-    Task<IChave> AlterarChave(IChave chaveAAlterar);
-    Task ExcluirChave(int id);
+    Task<IChave> IncluirChave(
+        CancellationToken cancellationToken,
+        IChave chave);
+    Task<IChave> AlterarChave(
+        CancellationToken cancellationToken,
+        IChave chaveAAlterar);
+    Task ExcluirChave(
+        CancellationToken cancellationToken,
+        int id);
 }

@@ -23,6 +23,7 @@ public class ChaveApplication : IChaveApplication
     }
     
     public async Task<PagedListWrapper<IChave>> BuscarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -34,6 +35,8 @@ public class ChaveApplication : IChaveApplication
         int? skip = 0,
         int? limit = null)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        
         int total = await _service.ContarChaves(
             aplicacao,
             vigenteEm,
@@ -46,6 +49,8 @@ public class ChaveApplication : IChaveApplication
 
         if (0.Equals(total)) return Enumerable.Empty<IChave>().WrapUp();
         
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (await _service.BuscarChaves(
                 aplicacao,
                 vigenteEm,
@@ -61,18 +66,21 @@ public class ChaveApplication : IChaveApplication
     }
 
     public async Task<IAplicacao> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
         Guid appId)
-    {
+    {        
         return await _aplicacaoService.BuscarAplicacaoPorId(appId);
     }
 
     public async Task<ITipo> BuscarTipoPorId(
+        CancellationToken cancellationToken,
         int id)
     {
         return await _tipoService.BuscarTipoPorId(id);
     }
 
     public async Task<IChave> BuscarChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id)
     {
@@ -82,18 +90,21 @@ public class ChaveApplication : IChaveApplication
     }
 
     public async Task<IChave> IncluirChave(
+        CancellationToken cancellationToken,
         IChave chave)
     {
         return await _service.IncluirChave(chave);
     }
 
     public async Task<IChave> AlterarChave(
+        CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
         return await _service.AlterarChave(chaveAAlterar);
     }
 
     public async Task ExcluirChave(
+        CancellationToken cancellationToken,
         int idChave)
     {
         await _service.ExcluirChave(idChave);
