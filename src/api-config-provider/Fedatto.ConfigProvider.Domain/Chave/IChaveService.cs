@@ -27,8 +27,12 @@ public interface IChaveService
         bool habilitado = true);
     Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int id,
-        DateTime vigenteEm);
+        int id);
     Task<IChave> IncluirChave(
         IChave chave);
+
+    Task<IChave> AlterarChave(
+        IChave chaveAAlterar);
+    Task ExcluirChave(
+        int idChave);
 }

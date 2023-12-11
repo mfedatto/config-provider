@@ -28,12 +28,13 @@ public class ValorController : Controller
         DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
 
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)!
-            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
+            .ConfigureAwait(false);
         IChave chave = await _application.ObterChavePorId(
                 aplicacao,
-                idChave,
-                vigenteEmEfetivo)!
-            .ThenThrowIfNull<IChave, ChaveNaoEncontradaException>();
+                idChave)!
+            .ThenThrowIfNull<IChave, ChaveNaoEncontradaException>()
+            .ConfigureAwait(false);
 
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
 

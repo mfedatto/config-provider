@@ -23,7 +23,7 @@ public class ChaveRepository : IChaveRepository
         _factory = factory;
         _tipoRepository = tipoRepository;
     }
-    
+
     public async Task<IEnumerable<IChave>> BuscarChaves(
         IAplicacao aplicacao,
         DateTime vigenteEm,
@@ -37,36 +37,36 @@ public class ChaveRepository : IChaveRepository
         int? limit = null)
     {
         return (await _uow.DbConnection.QueryAsync<Chave>(
-            """
-            SELECT *
-            FROM Chaves
-            WHERE
-                (AppId = @AppId::uuid) AND
-                (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
-                (@IdTipo IS NULL OR IdTipo = @IdTipo) AND
-                (@Lista IS NULL OR Lista = @Lista) AND
-                (@PermiteNulo IS NULL OR PermiteNulo = @PermiteNulo) AND
-                (@IdTipo IS NULL OR IdTipo = @IdTipo) AND
-                (Habilitado = @Habilitado) AND
-                (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND
-                (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date)
-            ORDER BY Nome
-            OFFSET @p_Skip
-            LIMIT @p_Limit;
-            """,
-            new
-            {
-                aplicacao.AppId,
-                VigenteEm = vigenteEm,
-                Nome = nome?.ToLower(),
-                IdTipo = tipo?.Id,
-                Lista = lista,
-                PermiteNulo = permiteNulo,
-                IdChavePai = idChavePai,
-                Habilitado = habilitado,
-                Skip = skip,
-                Limit = limit
-            }))
+                """
+                SELECT *
+                FROM Chaves
+                WHERE
+                    (AppId = @AppId::uuid) AND
+                    (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
+                    (@IdTipo IS NULL OR IdTipo = @IdTipo) AND
+                    (@Lista IS NULL OR Lista = @Lista) AND
+                    (@PermiteNulo IS NULL OR PermiteNulo = @PermiteNulo) AND
+                    (@IdTipo IS NULL OR IdTipo = @IdTipo) AND
+                    (Habilitado = @Habilitado) AND
+                    (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND
+                    (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date)
+                ORDER BY Nome
+                OFFSET @p_Skip
+                LIMIT @p_Limit;
+                """,
+                new
+                {
+                    aplicacao.AppId,
+                    VigenteEm = vigenteEm,
+                    Nome = nome?.ToLower(),
+                    IdTipo = tipo?.Id,
+                    Lista = lista,
+                    PermiteNulo = permiteNulo,
+                    IdChavePai = idChavePai,
+                    Habilitado = habilitado,
+                    Skip = skip,
+                    Limit = limit
+                }))
             .Select(chaveEncontrada
                 => _factory.Create(
                     chaveEncontrada,
@@ -104,7 +104,7 @@ public class ChaveRepository : IChaveRepository
                 aplicacao.AppId,
                 VigenteEm = vigenteEm,
                 Nome = nome?.ToLower(),
-                IdTipo = tipo,
+                IdTipo = tipo?.Id,
                 Lista = lista,
                 PermiteNulo = permiteNulo,
                 IdChavePai = idChavePai,
@@ -114,8 +114,7 @@ public class ChaveRepository : IChaveRepository
 
     public async Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int id,
-        DateTime vigenteEm)
+        int id)
     {
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
@@ -123,15 +122,12 @@ public class ChaveRepository : IChaveRepository
                 FROM Chaves
                 WHERE
                     AppId = @AppId::uuid AND
-                    Id = @Id AND
-                    (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND
-                    (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date);
+                    Id = @Id;
                 """,
                 new
                 {
                     aplicacao.AppId,
-                    Id = id,
-                    VigenteEm = vigenteEm
+                    Id = id
                 }))
             .Select(chaveEncontrada
                 => _factory.Create(
@@ -140,33 +136,88 @@ public class ChaveRepository : IChaveRepository
                     _tipoRepository.BuscarTipo(chaveEncontrada.IdTipo).Result!))
             .SingleOrDefault()!;
     }
-    
+
     public async Task<IChave> IncluirChave(
         IChave chaveAIncluir)
     {
         return (await _uow.DbConnection.QueryAsync<Chave>(
-            """
-            INSERT INTO Chave (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
-            VALUES (@AppId::uuid, @Nome, @IdTipo, @Lista, @PermiteNulo, @IdChavePai, @Habilitado, @VigenteDe::date, @VigenteAte::date)
-            RETURNING *;
-            """,
-            new {
-                chaveAIncluir.Aplicacao.AppId,
-                chaveAIncluir.Nome,
-                IdTipo = chaveAIncluir.Tipo.Id,
-                chaveAIncluir.Lista,
-                chaveAIncluir.PermiteNulo,
-                chaveAIncluir.IdChavePai,
-                chaveAIncluir.Habilitado,
-                chaveAIncluir.VigenteDe,
-                chaveAIncluir.VigenteAte
-            }))
+                """
+                INSERT INTO Chaves (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
+                VALUES (@AppId::uuid, @Nome, @IdTipo, @Lista, @PermiteNulo, @IdChavePai, @Habilitado, @VigenteDe::date, @VigenteAte::date)
+                RETURNING *;
+                """,
+                new
+                {
+                    chaveAIncluir.Aplicacao.AppId,
+                    chaveAIncluir.Nome,
+                    IdTipo = chaveAIncluir.Tipo.Id,
+                    chaveAIncluir.Lista,
+                    chaveAIncluir.PermiteNulo,
+                    chaveAIncluir.IdChavePai,
+                    chaveAIncluir.Habilitado,
+                    chaveAIncluir.VigenteDe,
+                    chaveAIncluir.VigenteAte
+                }))
             .Select(chaveIncluida
                 => _factory.Create(
                     chaveIncluida,
                     chaveAIncluir.Aplicacao,
                     chaveAIncluir.Tipo))
             .Single();
+    }
+
+    public async Task<IChave> AlterarChave(
+        IChave chaveAAlterar)
+    {
+        return (await _uow.DbConnection.QueryAsync<Chave>(
+                """
+                UPDATE Chaves
+                SET
+                    AppId = @AppId::uuid,
+                    Nome = @Nome,
+                    IdTipo = @IdTipo,
+                    Lista = @Lista,
+                    PermiteNulo = @PermiteNulo,
+                    IdChavePai = @IdChavePai,
+                    Habilitado = @Habilitado,
+                    VigenteDe = @VigenteDe::date,
+                    VigenteAte = @VigenteAte::date
+                WHERE Id = @Id
+                RETURNING *;
+                """,
+                new
+                {
+                    chaveAAlterar.Id,
+                    chaveAAlterar.Aplicacao.AppId,
+                    chaveAAlterar.Nome,
+                    IdTipo = chaveAAlterar.Tipo.Id,
+                    chaveAAlterar.Lista,
+                    chaveAAlterar.PermiteNulo,
+                    chaveAAlterar.IdChavePai,
+                    chaveAAlterar.Habilitado,
+                    chaveAAlterar.VigenteDe,
+                    chaveAAlterar.VigenteAte
+                }))
+            .Select(chaveAlterada =>
+                _factory.Create(
+                    chaveAlterada,
+                    chaveAAlterar.Aplicacao,
+                    chaveAAlterar.Tipo))
+            .Single();
+    }
+
+    public async Task ExcluirChave(
+        int idChave)
+    {
+        await _uow.DbConnection.ExecuteAsync(
+            """
+            DELETE FROM Chaves
+            WHERE Id = @Id;
+            """,
+            new
+            {
+                Id = idChave
+            });
     }
 }
 
@@ -194,7 +245,7 @@ file static class RepositoryExtensions
     {
         if (aplicacao is null) throw new AplicacaoNaoEncontradaException();
         if (tipo is null) throw new TipoNaoEncontradoException();
-        
+
         return factory.Create(
             chave.Id,
             aplicacao,

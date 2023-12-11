@@ -40,6 +40,25 @@ public static class ModelExtensions
             requestModel.VigenteDe,
             requestModel.VigenteAte);
     }
+
+    public static IChave ToEntity(
+        this ChaveFactory factory,
+        PutChaveRequestModel requestModel,
+        IAplicacao aplicacao,
+        ITipo tipo)
+    {
+        return factory.Create(
+            requestModel.Id,
+            aplicacao,
+            requestModel.Nome,
+            tipo,
+            requestModel.Lista,
+            requestModel.PermiteNulo,
+            requestModel.IdChavePai,
+            requestModel.Habilitado,
+            requestModel.VigenteDe,
+            requestModel.VigenteAte);
+    }
     
     public static PostChaveResponseModel ToPostResponseModel(
         this IChave chave)
@@ -47,9 +66,25 @@ public static class ModelExtensions
         return new PostChaveResponseModel
         {
             Id = chave.Id,
-            AppId = chave.Aplicacao.AppId,
+            Aplicacao = chave.Aplicacao,
             Nome = chave.Nome,
-            IdTipo = chave.Tipo.Id,
+            Tipo = chave.Tipo,
+            Lista = chave.Lista,
+            PermiteNulo = chave.PermiteNulo,
+            IdChavePai = chave.IdChavePai,
+            Habilitado = chave.Habilitado
+        };
+    }
+    
+    public static PutChaveResponseModel ToPutResponseModel(
+        this IChave chave)
+    {
+        return new PutChaveResponseModel
+        {
+            Id = chave.Id,
+            Aplicacao = chave.Aplicacao,
+            Nome = chave.Nome,
+            Tipo = chave.Tipo,
             Lista = chave.Lista,
             PermiteNulo = chave.PermiteNulo,
             IdChavePai = chave.IdChavePai,

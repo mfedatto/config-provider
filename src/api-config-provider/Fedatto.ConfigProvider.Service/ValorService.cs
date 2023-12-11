@@ -45,12 +45,10 @@ public class ValorService : IValorService
 
     public async Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int idChave,
-        DateTime vigenteEm)
+        int idChave)
     {
         return await _chaveRepository.BuscarChavePorId(
             aplicacao,
-            idChave,
-            vigenteEm);
+            idChave);
     }
 }

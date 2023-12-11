@@ -13,6 +13,5 @@ public interface IValorService
         Guid appId);
     Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int idChave,
-        DateTime vigenteEm);
+        int idChave);
 }

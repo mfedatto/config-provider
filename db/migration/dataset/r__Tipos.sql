@@ -7,5 +7,5 @@ INSERT INTO Tipos (Id, Nome, Habilitado) VALUES
     (5, 'Texto', true),
     (7, 'Lógico', true),
     (11, 'Data', true),
-    (13, 'Json', true),
+    (13, 'Json', false),
     (17, 'Binário', false);

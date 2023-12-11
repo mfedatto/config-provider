@@ -44,13 +44,13 @@ public class ChaveController : Controller
                 .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)
                 .ConfigureAwait(false);
 
-        DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
+        vigenteEm = vigenteEm ?? DateTime.Now;
         
-        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
+        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
         
         return Ok((await _application.BuscarChaves(
                 aplicacao,
-                vigenteEmEfetivo,
+                vigenteEm.Value,
                 nome,
                 tipo,
                 lista,
@@ -64,9 +64,10 @@ public class ChaveController : Controller
     
     [HttpPost(Rotas.ChavesPostChave)]
     public async Task<ActionResult<PostChaveResponseModel>> Post_Index(
+        [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
         [FromBody] PostChaveRequestModel requestModel)
     {
-        IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(requestModel.AppId)
+        IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
         ITipo tipo = await _application.BuscarTipoPorId(requestModel.IdTipo)
@@ -85,30 +86,26 @@ public class ChaveController : Controller
     [HttpGet(Rotas.ChavesGetChave)]
     public async Task<ActionResult<GetChaveResponseModel>> Get_ById(
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
-        [FromRoute(Name = ArgumentosNomeados.IdChave)] int id,
-        [FromQuery(Name = ArgumentosNomeados.VigenteEm)] DateTime? vigenteEm)
+        [FromRoute(Name = ArgumentosNomeados.IdChave)] int id)
     {
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
         
-        vigenteEm = vigenteEm ?? DateTime.Now;
-        
-        Response.Headers.Append(
-            CabecalhosNomeados.VigenteEm,
-            vigenteEm.Value.ToString("yyyy-MM-dd"));
-        
         return Ok((await _application.BuscarChavePorId(
                 aplicacao,
-                id,
-                vigenteEm.Value))
+                id))
             .ToGetResponseModel());
     }
     
     [HttpPut(Rotas.ChavesPutChave)]
-    public async Task<ActionResult<PostChaveResponseModel>> Put_Index(
-        [FromBody] PostChaveRequestModel requestModel)
+    public async Task<ActionResult<PutChaveResponseModel>> Put_Index(
+        [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
+        [FromBody] PutChaveRequestModel requestModel)
     {
+        await _application.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
         IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(requestModel.AppId)
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
@@ -121,7 +118,26 @@ public class ChaveController : Controller
             aplicacao,
             tipo);
         
-        return Ok((await _application.IncluirChave(chave))
-            .ToPostResponseModel());
+        return Ok((await _application.AlterarChave(chave))
+            .ToPutResponseModel());
+    }
+    
+    [HttpDelete(Rotas.ChavesPutChave)]
+    public async Task<ActionResult<PostChaveResponseModel>> Delete_ById(
+        [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
+        [FromRoute(Name = ArgumentosNomeados.IdChave)] int idChave)
+    {
+        IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)
+            .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
+            .ConfigureAwait(false);
+        await _application.BuscarChavePorId(
+                aplicacao,
+                idChave)
+            .ThenThrowIfNull<IChave, ChaveNaoEncontradaException>()
+            .ConfigureAwait(false);
+
+        await _application.ExcluirChave(idChave);
+        
+        return Ok();
     }
 }

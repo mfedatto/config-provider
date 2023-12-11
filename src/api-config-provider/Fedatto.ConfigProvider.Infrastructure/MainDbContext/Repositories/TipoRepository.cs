@@ -24,16 +24,16 @@ public class TipoRepository : ITipoRepository
             SELECT *
             FROM Tipos
             WHERE
-                (@p_Id IS NULL OR Id = @p_Id) AND
-                (@p_Nome IS NULL OR LOWER(Nome) ~ @p_Nome) AND
-                (@p_Habilitado IS NULL OR Habilitado = @p_Habilitado)
-            ORDER BY Nome;
+                (@Id IS NULL OR Id = @Id) AND
+                (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
+                (@Habilitado IS NULL OR Habilitado = @Habilitado)
+            ORDER BY Id;
             """,
             new
             {
-                p_Id = id,
-                p_Nome = nome?.ToLower(),
-                p_Habilitado = habilitado
+                Id = id,
+                Nome = nome?.ToLower(),
+                Habilitado = habilitado
             });
     }
 
@@ -47,15 +47,15 @@ public class TipoRepository : ITipoRepository
             SELECT COUNT(*)
             FROM Tipos
             WHERE
-                (@p_Id IS NULL OR Id = @p_Id) AND
-                (@p_Nome IS NULL OR LOWER(Nome) ~ @p_Nome) AND
-                (@p_Habilitado IS NULL OR Habilitado = @p_Habilitado);
+                (@Id IS NULL OR Id = @Id) AND
+                (@Nome IS NULL OR LOWER(Nome) ~ @Nome) AND
+                (@Habilitado IS NULL OR Habilitado = @Habilitado);
             """,
             new
             {
-                p_Id = id,
-                p_Nome = nome?.ToLower(),
-                p_Habilitado = habilitado
+                Id = id,
+                Nome = nome?.ToLower(),
+                Habilitado = habilitado
             });
     }
     
@@ -66,11 +66,11 @@ public class TipoRepository : ITipoRepository
             SELECT *
             FROM Tipos
             WHERE
-                Id = @p_Id;
+                Id = @Id;
             """,
             new
             {
-                p_Id = id
+                Id = id
             }))
             .SingleOrDefault<ITipo>()!;
     }

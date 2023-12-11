@@ -3,7 +3,7 @@ using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Chave;
 
-public class PostChaveResponseModel
+public class PutChaveResponseModel
 {
     public int Id { get; init; }
     public IAplicacao Aplicacao { get; init; }

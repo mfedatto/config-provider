@@ -32,12 +32,10 @@ public class ValorApplication : IValorApplication
 
     public async Task<IChave?> ObterChavePorId(
         IAplicacao aplicacao,
-        int idChave,
-        DateTime vigenteEm)
+        int idChave)
     {
         return await _service.BuscarChavePorId(
             aplicacao,
-            idChave,
-            vigenteEm);
+            idChave);
     }
 }

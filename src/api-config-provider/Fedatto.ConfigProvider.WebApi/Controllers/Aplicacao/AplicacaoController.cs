@@ -1,4 +1,3 @@
-using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Wrappers;
@@ -31,10 +30,9 @@ public class AplicacaoController : Controller
         [FromQuery(Name = ArgumentosNomeados.Skip)] int? skip = 0,
         [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
     {
-        if (vigenteEm.HasValue)
-        {
-            Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
-        }
+        vigenteEm = vigenteEm ?? DateTime.Now;
+        
+        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
 
         return Ok((await _application.BuscarAplicacoes(
             nome,
@@ -43,7 +41,8 @@ public class AplicacaoController : Controller
             habilitado,
             vigenteEm,
             skip,
-            limit))
+            limit)
+                .ConfigureAwait(false))
             .Map(aplicacao => aplicacao.ToGetResponseModel()));
     }
     
@@ -62,7 +61,8 @@ public class AplicacaoController : Controller
     public async Task<ActionResult<GetAplicacaoResponseModel>> Get_ById(
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        return Ok((await _application.BuscarAplicacaoPorId(appId))
+        return Ok((await _application.BuscarAplicacaoPorId(appId)
+                .ConfigureAwait(false))
             .ToGetResponseModel());
     }
     

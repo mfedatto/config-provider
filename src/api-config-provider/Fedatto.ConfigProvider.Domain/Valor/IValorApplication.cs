@@ -14,6 +14,5 @@ public interface IValorApplication
         Guid appId);
     Task<IChave?> ObterChavePorId(
         IAplicacao aplicacao,
-        int idChave,
-        DateTime vigenteEm);
+        int idChave);
 }

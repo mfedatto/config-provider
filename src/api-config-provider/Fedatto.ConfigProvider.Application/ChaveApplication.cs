@@ -74,18 +74,28 @@ public class ChaveApplication : IChaveApplication
 
     public async Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int id,
-        DateTime vigenteEm)
+        int id)
     {
         return await _service.BuscarChavePorId(
             aplicacao,
-            id,
-            vigenteEm);
+            id);
     }
 
     public async Task<IChave> IncluirChave(
         IChave chave)
     {
         return await _service.IncluirChave(chave);
+    }
+
+    public async Task<IChave> AlterarChave(
+        IChave chaveAAlterar)
+    {
+        return await _service.AlterarChave(chaveAAlterar);
+    }
+
+    public async Task ExcluirChave(
+        int idChave)
+    {
+        await _service.ExcluirChave(idChave);
     }
 }

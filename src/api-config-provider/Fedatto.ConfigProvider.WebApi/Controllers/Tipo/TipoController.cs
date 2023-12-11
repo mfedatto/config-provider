@@ -26,7 +26,8 @@ public class TipoController : Controller
         return Ok((await _application.BuscarTipos(
                 id,
                 nome,
-                habilitado))
+                habilitado)
+                .ConfigureAwait(false))
             .Select(tipo => tipo.ToGetResponseModel()));
     }
     
@@ -34,7 +35,8 @@ public class TipoController : Controller
     public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_ById(
         [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
-        return Ok((await _application.BuscarTipoPorId(id))
+        return Ok((await _application.BuscarTipoPorId(id)
+                .ConfigureAwait(false))
             .ToGetResponseModel());
     }
     

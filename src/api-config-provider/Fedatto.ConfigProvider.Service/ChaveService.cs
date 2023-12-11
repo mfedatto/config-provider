@@ -64,8 +64,7 @@ public class ChaveService : IChaveService
 
     public async Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int id,
-        DateTime vigenteEm)
+        int id)
     {
         IChave? result;
         
@@ -73,8 +72,7 @@ public class ChaveService : IChaveService
         {
             result =  await _repository.BuscarChavePorId(
                 aplicacao,
-                id,
-                vigenteEm);
+                id);
             
             if (result is null) throw new ChaveNaoEncontradaException();
         }
@@ -90,5 +88,17 @@ public class ChaveService : IChaveService
         IChave chave)
     {
         return await _repository.IncluirChave(chave);
+    }
+
+    public async Task<IChave> AlterarChave(
+        IChave chaveAAlterar)
+    {
+        return await _repository.AlterarChave(chaveAAlterar);
+    }
+
+    public async Task ExcluirChave(
+        int idChave)
+    {
+        await _repository.ExcluirChave(idChave);
     }
 }

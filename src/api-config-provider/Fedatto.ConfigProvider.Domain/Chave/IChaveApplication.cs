@@ -17,13 +17,12 @@ public interface IChaveApplication
         bool habilitado = true,
         int? skip = 0,
         int? limit = null);
-    Task<IAplicacao> BuscarAplicacaoPorId(
-        Guid appId);
-    Task<ITipo> BuscarTipoPorId(
-        int id);
+    Task<IAplicacao> BuscarAplicacaoPorId(Guid appId);
+    Task<ITipo> BuscarTipoPorId(int id);
     Task<IChave> BuscarChavePorId(
         IAplicacao aplicacao,
-        int id,
-        DateTime vigenteEm);
+        int id);
     Task<IChave> IncluirChave(IChave chave);
+    Task<IChave> AlterarChave(IChave chaveAAlterar);
+    Task ExcluirChave(int id);
 }
