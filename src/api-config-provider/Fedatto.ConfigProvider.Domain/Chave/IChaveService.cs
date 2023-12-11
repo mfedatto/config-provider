@@ -6,6 +6,7 @@ namespace Fedatto.ConfigProvider.Domain.Chave;
 public interface IChaveService
 {
     Task<IEnumerable<IChave>> BuscarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -17,6 +18,7 @@ public interface IChaveService
         int? skip = 0,
         int? limit = null);
     Task<int> ContarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -26,13 +28,16 @@ public interface IChaveService
         int? idChavePai = null,
         bool habilitado = true);
     Task<IChave> BuscarChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id);
     Task<IChave> IncluirChave(
+        CancellationToken cancellationToken,
         IChave chave);
-
     Task<IChave> AlterarChave(
+        CancellationToken cancellationToken,
         IChave chaveAAlterar);
     Task ExcluirChave(
+        CancellationToken cancellationToken,
         int idChave);
 }

@@ -25,6 +25,7 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task<IEnumerable<IChave>> BuscarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -36,6 +37,8 @@ public class ChaveRepository : IChaveRepository
         int? skip = 0,
         int? limit = null)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
                 SELECT *
@@ -75,6 +78,7 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task<int> ContarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -84,6 +88,8 @@ public class ChaveRepository : IChaveRepository
         int? idChavePai = null,
         bool habilitado = true)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return await _uow.DbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
@@ -113,9 +119,12 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task<IChave> BuscarChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
                 SELECT *
@@ -138,8 +147,11 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task<IChave> IncluirChave(
+        CancellationToken cancellationToken,
         IChave chaveAIncluir)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
                 INSERT INTO Chaves (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
@@ -167,8 +179,11 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task<IChave> AlterarChave(
+        CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
                 UPDATE Chaves
@@ -207,8 +222,11 @@ public class ChaveRepository : IChaveRepository
     }
 
     public async Task ExcluirChave(
+        CancellationToken cancellationToken,
         int idChave)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         await _uow.DbConnection.ExecuteAsync(
             """
             DELETE FROM Chaves

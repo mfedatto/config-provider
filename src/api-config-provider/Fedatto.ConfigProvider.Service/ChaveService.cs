@@ -17,6 +17,7 @@ public class ChaveService : IChaveService
     }
     
     public async Task<IEnumerable<IChave>> BuscarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -29,6 +30,7 @@ public class ChaveService : IChaveService
         int? limit = null)
     {
         return await _repository.BuscarChaves(
+            cancellationToken,
             aplicacao,
             vigenteEm,
             nome,
@@ -42,6 +44,7 @@ public class ChaveService : IChaveService
     }
 
     public async Task<int> ContarChaves(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
         string? nome = null,
@@ -52,6 +55,7 @@ public class ChaveService : IChaveService
         bool habilitado = true)
     {
         return await _repository.ContarChaves(
+            cancellationToken,
             aplicacao,
             vigenteEm,
             nome,
@@ -63,6 +67,7 @@ public class ChaveService : IChaveService
     }
 
     public async Task<IChave> BuscarChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id)
     {
@@ -71,6 +76,7 @@ public class ChaveService : IChaveService
         try
         {
             result =  await _repository.BuscarChavePorId(
+                cancellationToken,
                 aplicacao,
                 id);
             
@@ -85,20 +91,29 @@ public class ChaveService : IChaveService
     }
     
     public async Task<IChave> IncluirChave(
+        CancellationToken cancellationToken,
         IChave chave)
     {
-        return await _repository.IncluirChave(chave);
+        return await _repository.IncluirChave(
+            cancellationToken,
+            chave);
     }
 
     public async Task<IChave> AlterarChave(
+        CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
-        return await _repository.AlterarChave(chaveAAlterar);
+        return await _repository.AlterarChave(
+            cancellationToken,
+            chaveAAlterar);
     }
 
     public async Task ExcluirChave(
+        CancellationToken cancellationToken,
         int idChave)
     {
-        await _repository.ExcluirChave(idChave);
+        await _repository.ExcluirChave(
+            cancellationToken,
+            idChave);
     }
 }

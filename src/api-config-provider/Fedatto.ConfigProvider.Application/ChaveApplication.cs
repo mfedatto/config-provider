@@ -38,6 +38,7 @@ public class ChaveApplication : IChaveApplication
         cancellationToken.ThrowIfCancellationRequested();
         
         int total = await _service.ContarChaves(
+            cancellationToken,
             aplicacao,
             vigenteEm,
             nome,
@@ -52,6 +53,7 @@ public class ChaveApplication : IChaveApplication
         cancellationToken.ThrowIfCancellationRequested();
 
         return (await _service.BuscarChaves(
+                cancellationToken,
                 aplicacao,
                 vigenteEm,
                 nome,
@@ -85,6 +87,7 @@ public class ChaveApplication : IChaveApplication
         int id)
     {
         return await _service.BuscarChavePorId(
+            cancellationToken,
             aplicacao,
             id);
     }
@@ -93,20 +96,26 @@ public class ChaveApplication : IChaveApplication
         CancellationToken cancellationToken,
         IChave chave)
     {
-        return await _service.IncluirChave(chave);
+        return await _service.IncluirChave(
+            cancellationToken,
+            chave);
     }
 
     public async Task<IChave> AlterarChave(
         CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
-        return await _service.AlterarChave(chaveAAlterar);
+        return await _service.AlterarChave(
+            cancellationToken,
+            chaveAAlterar);
     }
 
     public async Task ExcluirChave(
         CancellationToken cancellationToken,
         int idChave)
     {
-        await _service.ExcluirChave(idChave);
+        await _service.ExcluirChave(
+            cancellationToken,
+            idChave);
     }
 }

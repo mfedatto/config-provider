@@ -48,6 +48,7 @@ public class ValorService : IValorService
         int idChave)
     {
         return await _chaveRepository.BuscarChavePorId(
+            CancellationToken.None, 
             aplicacao,
             idChave);
     }
