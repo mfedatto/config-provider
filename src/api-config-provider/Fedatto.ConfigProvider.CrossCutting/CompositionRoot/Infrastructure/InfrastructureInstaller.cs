@@ -2,6 +2,7 @@ using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
+using Fedatto.ConfigProvider.Domain.Valor;
 using Fedatto.ConfigProvider.Infrastructure.MainDbContext;
 using Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,5 +17,6 @@ public class InfrastructureInstaller : IServiceInstaller
         services.AddScoped<IAplicacaoRepository, AplicacaoRepository>();
         services.AddScoped<ITipoRepository, TipoRepository>();
         services.AddScoped<IChaveRepository, ChaveRepository>();
+        services.AddScoped<IValorRepository, ValorRepository>();
     }
 }

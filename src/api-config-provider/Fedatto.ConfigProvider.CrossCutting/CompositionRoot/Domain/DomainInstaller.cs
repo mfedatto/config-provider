@@ -1,4 +1,5 @@
 using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,5 +11,6 @@ public class DomainInstaller : IServiceInstaller
     {
         services.AddSingleton<AplicacaoFactory>();
         services.AddSingleton<TipoFactory>();
+        services.AddSingleton<ChaveFactory>();
     }
 }

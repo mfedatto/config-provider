@@ -64,7 +64,7 @@ public class AplicacaoRepository : IAplicacaoRepository
                 (@Sigla IS NULL OR LOWER(Sigla) ~ @Sigla) AND
                 (@Aka IS NULL OR LOWER(Aka) ~ @Aka) AND
                 (@Habilitado IS NULL OR Habilitado = @Habilitado) AND
-                (@VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @p_VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date));
+                (@VigenteEm IS NULL OR (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date));
             """,
             new
             {

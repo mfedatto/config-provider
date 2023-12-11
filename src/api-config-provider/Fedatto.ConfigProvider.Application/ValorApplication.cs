@@ -1,7 +1,6 @@
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Valor;
-using Fedatto.HttpExceptions;
 
 namespace Fedatto.ConfigProvider.Application;
 

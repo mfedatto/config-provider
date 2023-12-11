@@ -12,9 +12,9 @@ public static class ModelExtensions
         return new GetChaveResponseModel
         {
             Id = chave.Id,
-            AppId = chave.Aplicacao.AppId,
+            Aplicacao = chave.Aplicacao,
             Nome = chave.Nome,
-            IdTipo = chave.Tipo.Id,
+            Tipo = chave.Tipo,
             Lista = chave.Lista,
             PermiteNulo = chave.PermiteNulo,
             IdChavePai = chave.IdChavePai,
