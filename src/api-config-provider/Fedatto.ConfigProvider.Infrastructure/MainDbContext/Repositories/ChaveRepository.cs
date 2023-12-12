@@ -1,4 +1,3 @@
-using Fedatto.HttpExceptions;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
@@ -74,7 +73,10 @@ public class ChaveRepository : IChaveRepository
                 => _factory.Create(
                     chaveEncontrada,
                     aplicacao,
-                    tipo ?? _tipoRepository.BuscarTipo(chaveEncontrada.IdTipo).Result!));
+                    tipo ?? _tipoRepository.BuscarTipo(
+                            cancellationToken,
+                            chaveEncontrada.IdTipo)
+                        .Result!));
     }
 
     public async Task<int> ContarChaves(
@@ -142,7 +144,10 @@ public class ChaveRepository : IChaveRepository
                 => _factory.Create(
                     chaveEncontrada,
                     aplicacao,
-                    _tipoRepository.BuscarTipo(chaveEncontrada.IdTipo).Result!))
+                    _tipoRepository.BuscarTipo(
+                            cancellationToken,
+                            chaveEncontrada.IdTipo)
+                        .Result!))
             .SingleOrDefault()!;
     }
 

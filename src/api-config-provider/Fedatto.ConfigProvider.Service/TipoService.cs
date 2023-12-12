@@ -15,34 +15,42 @@ public class TipoService : ITipoService
     }
     
     public async Task<IEnumerable<ITipo>> BuscarTipos(
+        CancellationToken cancellationToken,
         int? id = null,
         string? nome = null,
         bool? habilitado = null)
     {
         return await _repository.BuscarTipos(
+            cancellationToken,
             id,
             nome,
             habilitado);
     }
     
     public async Task<int> ContarTipos(
+        CancellationToken cancellationToken,
         int? id = null,
         string? nome = null,
         bool? habilitado = null)
     {
         return await _repository.ContarTipos(
+            cancellationToken,
             id,
             nome,
             habilitado);
     }
 
-    public async Task<ITipo> BuscarTipoPorId(int id)
+    public async Task<ITipo> BuscarTipoPorId(
+        CancellationToken cancellationToken,
+        int id)
     {
         ITipo? result;
         
         try
         {
-            result =  await _repository.BuscarTipo(id);
+            result =  await _repository.BuscarTipo(
+                cancellationToken,
+                id);
             
             if (result is null) throw new TipoNaoEncontradoException();
         }

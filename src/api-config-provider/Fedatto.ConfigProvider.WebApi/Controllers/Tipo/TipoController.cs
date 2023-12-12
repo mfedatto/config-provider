@@ -16,38 +16,46 @@ public class TipoController : Controller
     {
         _application = application;
     }
-    
+
     [HttpGet(Rotas.TiposGetTipos)]
     public async Task<ActionResult<IEnumerable<GetTipoResponseModel>>> Get_Index(
+        CancellationToken cancellationToken,
         [FromQuery(Name = ArgumentosNomeados.IdTipo)] int? id = null,
         [FromQuery(Name = ArgumentosNomeados.Nome)] string? nome = null,
         [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool? habilitado = null)
     {
         return Ok((await _application.BuscarTipos(
-                id,
-                nome,
-                habilitado)
+                    cancellationToken,
+                    id,
+                    nome,
+                    habilitado)
                 .ConfigureAwait(false))
             .Select(tipo => tipo.ToGetResponseModel()));
     }
-    
+
     [HttpGet(Rotas.TiposGetTipo)]
     public async Task<ActionResult<PagedListWrapper<GetTipoResponseModel>>> Get_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
-        return Ok((await _application.BuscarTipoPorId(id)
+        return Ok((await _application.BuscarTipoPorId(
+                    cancellationToken,
+                    id)
                 .ConfigureAwait(false))
             .ToGetResponseModel());
     }
-    
+
     [HttpHead(Rotas.TiposHeadTipo)]
     public async Task<ActionResult> Head_ById(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
-        await _application.BuscarTipoPorId(id)
+        await _application.BuscarTipoPorId(
+                cancellationToken,
+                id)
             .ThenThrowIfNull<ITipo, TipoNaoEncontradoException>()
             .ConfigureAwait(false);
-        
+
         return Ok();
     }
 }

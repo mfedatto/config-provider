@@ -3,7 +3,6 @@ using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Fedatto.ConfigProvider.Domain.Wrappers;
-using Fedatto.HttpExceptions;
 
 namespace Fedatto.ConfigProvider.Application;
 
@@ -81,7 +80,9 @@ public class ChaveApplication : IChaveApplication
         CancellationToken cancellationToken,
         int id)
     {
-        return await _tipoService.BuscarTipoPorId(id);
+        return await _tipoService.BuscarTipoPorId(
+            cancellationToken,
+            id);
     }
 
     public async Task<IChave> BuscarChavePorId(

@@ -20,6 +20,7 @@ public class ValorController : Controller
 
     [HttpGet(Rotas.ValoresGetValores)]
     public async Task<ActionResult<IEnumerable<GetValorResponseModel<object>>>> Get_Index(
+        CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
         [FromRoute(Name = ArgumentosNomeados.IdChave)] int idChave,
         [FromQuery(Name = ArgumentosNomeados.VigenteEm)] DateTime? vigenteEm,
@@ -27,10 +28,13 @@ public class ValorController : Controller
     {
         DateTime vigenteEmEfetivo = vigenteEm ?? DateTime.Now;
 
-        IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(appId)!
+        IAplicacao aplicacao = await _application.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)!
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>()
             .ConfigureAwait(false);
         IChave chave = await _application.ObterChavePorId(
+                cancellationToken,
                 aplicacao,
                 idChave)!
             .ThenThrowIfNull<IChave, ChaveNaoEncontradaException>()
@@ -39,6 +43,7 @@ public class ValorController : Controller
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
 
         return Ok((await _application.BuscarValores(
+                cancellationToken,
                 chave,
                 vigenteEmEfetivo,
                 habilitado))

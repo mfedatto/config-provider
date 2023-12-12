@@ -15,26 +15,34 @@ public class ValorApplication : IValorApplication
     }
     
     public async Task<IEnumerable<IValor<object>>> BuscarValores(
+        CancellationToken cancellationToken,
         IChave chave,
         DateTime vigenteEm,
         bool habilitado = true)
     {
         return await _service.BuscarValores(
+            cancellationToken,
             chave,
             vigenteEm,
             habilitado);
     }
 
-    public async Task<IAplicacao?> BuscarAplicacaoPorId(Guid appId)
+    public async Task<IAplicacao?> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
-        return await _service.BuscarAplicacaoPorId(appId);
+        return await _service.BuscarAplicacaoPorId(
+            cancellationToken,
+            appId);
     }
 
     public async Task<IChave?> ObterChavePorId(
+        CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int idChave)
     {
         return await _service.BuscarChavePorId(
+            cancellationToken,
             aplicacao,
             idChave);
     }

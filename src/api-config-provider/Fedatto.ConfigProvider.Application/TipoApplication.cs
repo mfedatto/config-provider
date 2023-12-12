@@ -15,11 +15,13 @@ public class TipoApplication : ITipoApplication
     }
     
     public async Task<IEnumerable<ITipo>> BuscarTipos(
+        CancellationToken cancellationToken,
         int? id = null,
         string? nome = null,
         bool? habilitado = null)
     {
         int total = await _service.ContarTipos(
+            cancellationToken,
             id,
             nome,
             habilitado);
@@ -27,13 +29,18 @@ public class TipoApplication : ITipoApplication
         if (0.Equals(total)) return Enumerable.Empty<ITipo>();
         
         return await _service.BuscarTipos(
+            cancellationToken,
             id,
             nome,
             habilitado);
     }
 
-    public async Task<ITipo> BuscarTipoPorId(int id)
+    public async Task<ITipo> BuscarTipoPorId(
+        CancellationToken cancellationToken,
+        int id)
     {
-        return await _service.BuscarTipoPorId(id);
+        return await _service.BuscarTipoPorId(
+            cancellationToken,
+            id);
     }
 }

@@ -1,4 +1,5 @@
 using Dapper;
+using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
 
@@ -15,10 +16,13 @@ public class TipoRepository : ITipoRepository
     }
     
     public async Task<IEnumerable<ITipo>> BuscarTipos(
+        CancellationToken cancellationToken,
         int? id = null,
         string? nome = null,
         bool? habilitado = null)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return await _uow.DbConnection.QueryAsync<Tipo>(
             """
             SELECT *
@@ -38,10 +42,13 @@ public class TipoRepository : ITipoRepository
     }
 
     public async Task<int> ContarTipos(
+        CancellationToken cancellationToken,
         int? id = null,
         string? nome = null,
         bool? habilitado = null)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return await _uow.DbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
@@ -59,8 +66,12 @@ public class TipoRepository : ITipoRepository
             });
     }
     
-    public async Task<ITipo?> BuscarTipo(int id)
+    public async Task<ITipo?> BuscarTipo(
+        CancellationToken cancellationToken,
+        int id)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return (await _uow.DbConnection.QueryAsync<Tipo>(
             """
             SELECT *
