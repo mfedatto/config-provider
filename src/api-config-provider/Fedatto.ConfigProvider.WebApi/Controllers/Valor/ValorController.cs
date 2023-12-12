@@ -40,7 +40,9 @@ public class ValorController : Controller
             .ThenThrowIfNull<IChave, ChaveNaoEncontradaException>()
             .ConfigureAwait(false);
 
-        Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
+        Response.Headers.Append(
+            CabecalhosNomeados.VigenteEm,
+            vigenteEmEfetivo.ToString("yyyy-MM-dd"));
 
         return Ok((await _application.BuscarValores(
                 cancellationToken,
