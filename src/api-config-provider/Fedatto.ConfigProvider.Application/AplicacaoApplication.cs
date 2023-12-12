@@ -1,7 +1,6 @@
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Wrappers;
-using Fedatto.HttpExceptions;
 
 namespace Fedatto.ConfigProvider.Application;
 
@@ -13,7 +12,7 @@ public class AplicacaoApplication : IAplicacaoApplication
     {
         _service = service;
     }
-    
+
     public async Task<PagedListWrapper<IAplicacao>> BuscarAplicacoes(
         CancellationToken cancellationToken,
         string? nome = null,
@@ -24,7 +23,10 @@ public class AplicacaoApplication : IAplicacaoApplication
         int? skip = 0,
         int? limit = null)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         int total = await _service.ContarAplicacoes(
+            cancellationToken,
             nome,
             sigla,
             aka,
@@ -32,49 +34,68 @@ public class AplicacaoApplication : IAplicacaoApplication
             vigenteEm);
 
         if (0.Equals(total)) return Enumerable.Empty<IAplicacao>().WrapUp();
-        
+
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return (await _service.BuscarAplicacoes(
-            nome,
-            sigla,
-            aka,
-            habilitado,
-            vigenteEm,
-            skip,
-            limit))
+                cancellationToken,
+                nome,
+                sigla,
+                aka,
+                habilitado,
+                vigenteEm,
+                skip,
+                limit))
             .WrapUp(skip ?? 0, limit, total);
     }
-    
+
     public async Task IncluirAplicacao(
         CancellationToken cancellationToken,
         IAplicacao aplicacao)
     {
-        await _service.IncluirAplicacao(aplicacao);
+        await _service.IncluirAplicacao(
+            cancellationToken,
+            aplicacao);
     }
-    
+
     public async Task<IAplicacao> BuscarAplicacaoPorId(
         CancellationToken cancellationToken,
         Guid appId)
     {
-        return await _service.BuscarAplicacaoPorId(appId);
+        return await _service.BuscarAplicacaoPorId(
+            cancellationToken,
+            appId);
     }
-    
+
     public async Task AtualizarAplicacao(
         CancellationToken cancellationToken,
         IAplicacao aplicacao)
     {
-        await _service.BuscarAplicacaoPorId(aplicacao.AppId)
+        cancellationToken.ThrowIfClientClosedRequest();
+
+        await _service.BuscarAplicacaoPorId(
+                cancellationToken,
+                aplicacao.AppId)
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _service.AtualizarAplicacao(aplicacao);
+        await _service.AtualizarAplicacao(
+            cancellationToken,
+            aplicacao);
     }
-    
+
     public async Task ExcluirAplicacao(
         CancellationToken cancellationToken,
         Guid appId)
     {
-        await _service.BuscarAplicacaoPorId(appId)
+        cancellationToken.ThrowIfClientClosedRequest();
+
+        await _service.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _service.ExcluirAplicacao(appId);
+        await _service.ExcluirAplicacao(
+            cancellationToken,
+            appId);
     }
 }

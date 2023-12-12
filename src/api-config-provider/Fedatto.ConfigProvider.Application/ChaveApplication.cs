@@ -1,5 +1,6 @@
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
+using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.HttpExceptions;
@@ -35,7 +36,7 @@ public class ChaveApplication : IChaveApplication
         int? skip = 0,
         int? limit = null)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
         
         int total = await _service.ContarChaves(
             cancellationToken,
@@ -50,7 +51,7 @@ public class ChaveApplication : IChaveApplication
 
         if (0.Equals(total)) return Enumerable.Empty<IChave>().WrapUp();
         
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return (await _service.BuscarChaves(
                 cancellationToken,
@@ -71,7 +72,9 @@ public class ChaveApplication : IChaveApplication
         CancellationToken cancellationToken,
         Guid appId)
     {        
-        return await _aplicacaoService.BuscarAplicacaoPorId(appId);
+        return await _aplicacaoService.BuscarAplicacaoPorId(
+            cancellationToken,
+            appId);
     }
 
     public async Task<ITipo> BuscarTipoPorId(

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Fedatto.ConfigProvider.Domain.Exceptions;
 
 public static class ExceptionsExtensions
@@ -25,5 +27,10 @@ public static class ExceptionsExtensions
         if (!available(result)) throw new TException();
 
         return result;
+    }
+
+    public static void ThrowIfClientClosedRequest(this CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested) throw new RequisicaoCanceladaException();
     }
 }

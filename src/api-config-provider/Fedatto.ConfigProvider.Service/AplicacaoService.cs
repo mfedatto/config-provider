@@ -14,6 +14,7 @@ public class AplicacaoService : IAplicacaoService
     }
     
     public async Task<IEnumerable<IAplicacao>> BuscarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
@@ -23,6 +24,7 @@ public class AplicacaoService : IAplicacaoService
         int? limit = null)
     {
         return await _repository.BuscarAplicacoes(
+            cancellationToken,
             nome,
             sigla,
             aka,
@@ -31,6 +33,7 @@ public class AplicacaoService : IAplicacaoService
     }
     
     public async Task<int> ContarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
@@ -38,6 +41,7 @@ public class AplicacaoService : IAplicacaoService
         DateTime? vigenteEm = null)
     {
         return await _repository.ContarAplicacoes(
+            cancellationToken,
             nome,
             sigla,
             aka,
@@ -45,22 +49,39 @@ public class AplicacaoService : IAplicacaoService
             vigenteEm);
     }
     
-    public async Task IncluirAplicacao(IAplicacao aplicacao)
+    public async Task IncluirAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
-        if ((await _repository.BuscarAplicacaoPorId(aplicacao.AppId)) is not null) throw new AppIdEmUsoException();
-        if ((await _repository.BuscarAplicacaoPorNome(aplicacao.Nome)) is not null) throw new NomeDeAplicacaoEmUsoException();
-        if ((await _repository.BuscarAplicacaoPorSigla(aplicacao.Sigla)) is not null) throw new SiglaDeAplicacaoEmUsoException();
+        await _repository.BuscarAplicacaoPorId(
+                cancellationToken,
+                aplicacao.AppId)!
+            .ThenThrowIfNull<IAplicacao, AppIdEmUsoException>();
+        await _repository.BuscarAplicacaoPorNome(
+                cancellationToken,
+                aplicacao.Nome)!
+            .ThenThrowIfNull<IAplicacao, NomeDeAplicacaoEmUsoException>();
+        await _repository.BuscarAplicacaoPorSigla(
+                cancellationToken,
+                aplicacao.Sigla)!
+            .ThenThrowIfNull<IAplicacao, SiglaDeAplicacaoEmUsoException>();
         
-        await _repository.IncluirAplicacao(aplicacao);
+        await _repository.IncluirAplicacao(
+            cancellationToken,
+            aplicacao);
     }
 
-    public async Task<IAplicacao> BuscarAplicacaoPorId(Guid appId)
+    public async Task<IAplicacao> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
         IAplicacao? result;
         
         try
         {
-            result =  await _repository.BuscarAplicacaoPorId(appId);
+            result =  await _repository.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId);
             
             if (result is null) throw new AplicacaoNaoEncontradaException();
         }
@@ -72,19 +93,31 @@ public class AplicacaoService : IAplicacaoService
         return result;
     }
     
-    public async Task AtualizarAplicacao(IAplicacao aplicacao)
+    public async Task AtualizarAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
-        if ((await _repository.BuscarAplicacaoPorId(aplicacao.AppId)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _repository.BuscarAplicacaoPorId(
+                cancellationToken,
+                aplicacao.AppId)!
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _repository.AtualizarAplicacao(aplicacao);
+        await _repository.AtualizarAplicacao(
+            cancellationToken,
+            aplicacao);
     }
     
-    public async Task ExcluirAplicacao(Guid appId)
+    public async Task ExcluirAplicacao(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
-        if ((await _repository.BuscarAplicacaoPorId(appId)) is null)
-            throw new AplicacaoNaoEncontradaException();
+        await _repository.BuscarAplicacaoPorId(
+                cancellationToken,
+                appId)!
+            .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _repository.ExcluirAplicacao(appId);
+        await _repository.ExcluirAplicacao(
+            cancellationToken,
+            appId);
     }
 }

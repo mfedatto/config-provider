@@ -20,7 +20,7 @@ public class ValorService : IValorService
         _aplicacaoRepository = aplicacaoRepository;
         _chaveRepository = chaveRepository;
     }
-    
+
     public async Task<IEnumerable<IValor<object>>> BuscarValores(
         IChave chave,
         DateTime vigenteEm,
@@ -40,7 +40,9 @@ public class ValorService : IValorService
 
     public async Task<IAplicacao?> BuscarAplicacaoPorId(Guid appId)
     {
-        return await _aplicacaoRepository.BuscarAplicacaoPorId(appId);
+        return await _aplicacaoRepository.BuscarAplicacaoPorId(
+            CancellationToken.None,
+            appId);
     }
 
     public async Task<IChave> BuscarChavePorId(
@@ -48,7 +50,7 @@ public class ValorService : IValorService
         int idChave)
     {
         return await _chaveRepository.BuscarChavePorId(
-            CancellationToken.None, 
+            CancellationToken.None,
             aplicacao,
             idChave);
     }

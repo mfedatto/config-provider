@@ -1,5 +1,6 @@
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
+using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
@@ -14,6 +15,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 
     public async Task<IEnumerable<IAplicacao>> BuscarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
@@ -22,6 +24,8 @@ public class AplicacaoRepository : IAplicacaoRepository
         int? skip = 0,
         int? limit = null)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+        
         return await _uow.DbConnection.QueryAsync<Aplicacao>(
             """
             SELECT *
@@ -49,12 +53,15 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 
     public async Task<int> ContarAplicacoes(
+        CancellationToken cancellationToken,
         string? nome = null,
         string? sigla = null,
         string? aka = null,
         bool? habilitado = null,
         DateTime? vigenteEm = null)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return await _uow.DbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
@@ -76,8 +83,12 @@ public class AplicacaoRepository : IAplicacaoRepository
             });
     }
 
-    public async Task IncluirAplicacao(IAplicacao aplicacao)
+    public async Task IncluirAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         await _uow.DbConnection.ExecuteAsync(
             """
             INSERT INTO Aplicacoes (AppId, Nome, Sigla, Aka, Habilitado, VigenteDe, VigenteAte)
@@ -88,8 +99,11 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorId(
+        CancellationToken cancellationToken,
         Guid appId)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return (await _uow.DbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
@@ -105,8 +119,11 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorNome(
+        CancellationToken cancellationToken,
         string nome)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return (await _uow.DbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
@@ -122,8 +139,11 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorSigla(
+        CancellationToken cancellationToken,
         string sigla)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         return (await _uow.DbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
@@ -138,8 +158,12 @@ public class AplicacaoRepository : IAplicacaoRepository
             .SingleOrDefault<IAplicacao>();
     }
 
-    public async Task AtualizarAplicacao(IAplicacao aplicacao)
+    public async Task AtualizarAplicacao(
+        CancellationToken cancellationToken,
+        IAplicacao aplicacao)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         await _uow.DbConnection.ExecuteAsync(
             """
             UPDATE Aplicacoes
@@ -155,8 +179,12 @@ public class AplicacaoRepository : IAplicacaoRepository
             aplicacao);
     }
 
-    public async Task ExcluirAplicacao(Guid appId)
+    public async Task ExcluirAplicacao(
+        CancellationToken cancellationToken,
+        Guid appId)
     {
+        cancellationToken.ThrowIfClientClosedRequest();
+
         await _uow.DbConnection.ExecuteAsync(
             """
             DELETE FROM Aplicacoes

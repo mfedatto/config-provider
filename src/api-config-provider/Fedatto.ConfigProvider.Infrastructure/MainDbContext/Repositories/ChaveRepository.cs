@@ -37,7 +37,7 @@ public class ChaveRepository : IChaveRepository
         int? skip = 0,
         int? limit = null)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
@@ -88,7 +88,7 @@ public class ChaveRepository : IChaveRepository
         int? idChavePai = null,
         bool habilitado = true)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return await _uow.DbConnection.ExecuteScalarAsync<int>(
             """
@@ -123,7 +123,7 @@ public class ChaveRepository : IChaveRepository
         IAplicacao aplicacao,
         int id)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
@@ -150,7 +150,7 @@ public class ChaveRepository : IChaveRepository
         CancellationToken cancellationToken,
         IChave chaveAIncluir)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
@@ -182,7 +182,7 @@ public class ChaveRepository : IChaveRepository
         CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         return (await _uow.DbConnection.QueryAsync<Chave>(
                 """
@@ -225,7 +225,7 @@ public class ChaveRepository : IChaveRepository
         CancellationToken cancellationToken,
         int idChave)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfClientClosedRequest();
 
         await _uow.DbConnection.ExecuteAsync(
             """
