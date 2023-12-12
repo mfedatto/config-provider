@@ -4,6 +4,7 @@ using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.ConfigProvider.WebApi.Constants;
+using Fedatto.ConfigProvider.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Chave;
@@ -53,7 +54,7 @@ public class ChaveController : Controller
         
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
         
-        return Ok((await _application.BuscarChaves(
+        return (await _application.BuscarChaves(
                 cancellationToken,
                 aplicacao,
                 vigenteEm.Value,
@@ -65,7 +66,8 @@ public class ChaveController : Controller
                 habilitado,
                 skip,
                 limit))
-            .Map(chave => chave.ToGetResponseModel()));
+            .Map(chave => chave.ToGetResponseModel())
+            .HttpOk();
     }
     
     [HttpPost(Rotas.ChavesPostChave)]
@@ -90,10 +92,11 @@ public class ChaveController : Controller
             aplicacao,
             tipo);
         
-        return Ok((await _application.IncluirChave(
+        return (await _application.IncluirChave(
                 cancellationToken,
                 chave))
-            .ToPostResponseModel());
+            .ToPostResponseModel()
+            .HttpOk();
     }
     
     [HttpGet(Rotas.ChavesGetChave)]
@@ -108,11 +111,12 @@ public class ChaveController : Controller
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
         
-        return Ok((await _application.BuscarChavePorId(
+        return (await _application.BuscarChavePorId(
                 cancellationToken,
                 aplicacao,
                 id))
-            .ToGetResponseModel());
+            .ToGetResponseModel()
+            .HttpOk();
     }
     
     [HttpPut(Rotas.ChavesPostChave)]
@@ -142,14 +146,15 @@ public class ChaveController : Controller
             aplicacao,
             tipo);
         
-        return Ok((await _application.AlterarChave(
+        return (await _application.AlterarChave(
                 cancellationToken,
                 chave))
-            .ToPutResponseModel());
+            .ToPutResponseModel()
+            .HttpOk();
     }
     
     [HttpDelete(Rotas.ChavesDeleteChave)]
-    public async Task<ActionResult<PostChaveResponseModel>> Delete_ById(
+    public async Task<ActionResult> Delete_ById(
         CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId,
         [FromRoute(Name = ArgumentosNomeados.IdChave)] int idChave)

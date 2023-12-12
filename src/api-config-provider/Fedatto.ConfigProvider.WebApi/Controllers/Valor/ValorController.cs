@@ -3,6 +3,7 @@ using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Valor;
 using Fedatto.ConfigProvider.WebApi.Constants;
+using Fedatto.ConfigProvider.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Valor;
@@ -42,11 +43,12 @@ public class ValorController : Controller
 
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEmEfetivo.ToString("yyyy-MM-dd"));
 
-        return Ok((await _application.BuscarValores(
+        return (await _application.BuscarValores(
                 cancellationToken,
                 chave,
                 vigenteEmEfetivo,
                 habilitado))
-            .Select(valor => valor.ToGetResponseModel()));
+            .Select(valor => valor.ToGetResponseModel())
+            .HttpOk();
     }
 }
