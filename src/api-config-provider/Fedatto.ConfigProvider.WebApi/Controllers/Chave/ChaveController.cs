@@ -4,7 +4,6 @@ using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.ConfigProvider.WebApi.Constants;
-using Fedatto.ConfigProvider.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Chave;
@@ -32,7 +31,7 @@ public class ChaveController : Controller
         [FromQuery(Name = ArgumentosNomeados.IdTipo)] int? idTipo = null,
         [FromQuery(Name = ArgumentosNomeados.Lista)] bool? lista = null,
         [FromQuery(Name = ArgumentosNomeados.PermiteNulo)] bool? permiteNulo = null,
-        [FromQuery(Name = ArgumentosNomeados.IdPai)] int? idChavePai = null,
+        [FromQuery(Name = ArgumentosNomeados.IdChavePai)] int? idChavePai = null,
         [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool habilitado = true,
         [FromQuery(Name = ArgumentosNomeados.Skip)] int? skip = 0,
         [FromQuery(Name = ArgumentosNomeados.Limit)] int? limit = null)
@@ -54,7 +53,7 @@ public class ChaveController : Controller
         
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
         
-        return (await _application.BuscarChaves(
+        return Ok((await _application.BuscarChaves(
                 cancellationToken,
                 aplicacao,
                 vigenteEm.Value,
@@ -66,8 +65,7 @@ public class ChaveController : Controller
                 habilitado,
                 skip,
                 limit))
-            .Map(chave => chave.ToGetResponseModel())
-            .HttpOk();
+            .Map(chave => chave.ToGetResponseModel()));
     }
     
     [HttpPost(Rotas.ChavesPostChave)]
@@ -92,11 +90,10 @@ public class ChaveController : Controller
             aplicacao,
             tipo);
         
-        return (await _application.IncluirChave(
+        return Ok((await _application.IncluirChave(
                 cancellationToken,
                 chave))
-            .ToPostResponseModel()
-            .HttpOk();
+            .ToPostResponseModel());
     }
     
     [HttpGet(Rotas.ChavesGetChave)]
@@ -111,12 +108,11 @@ public class ChaveController : Controller
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
         
-        return (await _application.BuscarChavePorId(
+        return Ok((await _application.BuscarChavePorId(
                 cancellationToken,
                 aplicacao,
                 id))
-            .ToGetResponseModel()
-            .HttpOk();
+            .ToGetResponseModel());
     }
     
     [HttpPut(Rotas.ChavesPostChave)]
@@ -146,11 +142,10 @@ public class ChaveController : Controller
             aplicacao,
             tipo);
         
-        return (await _application.AlterarChave(
+        return Ok((await _application.AlterarChave(
                 cancellationToken,
                 chave))
-            .ToPutResponseModel()
-            .HttpOk();
+            .ToPutResponseModel());
     }
     
     [HttpDelete(Rotas.ChavesDeleteChave)]

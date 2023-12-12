@@ -1,8 +1,6 @@
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Tipo;
-using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.ConfigProvider.WebApi.Constants;
-using Fedatto.ConfigProvider.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Tipo;
@@ -25,14 +23,13 @@ public class TipoController : Controller
         [FromQuery(Name = ArgumentosNomeados.Nome)] string? nome = null,
         [FromQuery(Name = ArgumentosNomeados.Habilitado)] bool? habilitado = null)
     {
-        return (await _application.BuscarTipos(
+        return Ok((await _application.BuscarTipos(
                     cancellationToken,
                     id,
                     nome,
                     habilitado)
                 .ConfigureAwait(false))
-            .Select(tipo => tipo.ToGetResponseModel())
-            .HttpOk();
+            .Select(tipo => tipo.ToGetResponseModel()));
     }
 
     [HttpGet(Rotas.TiposGetTipo)]
@@ -40,12 +37,11 @@ public class TipoController : Controller
         CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.IdTipo)] int id)
     {
-        return (await _application.BuscarTipoPorId(
+        return Ok((await _application.BuscarTipoPorId(
                     cancellationToken,
                     id)
                 .ConfigureAwait(false))
-            .ToGetResponseModel()
-            .HttpOk();
+            .ToGetResponseModel());
     }
 
     [HttpHead(Rotas.TiposHeadTipo)]

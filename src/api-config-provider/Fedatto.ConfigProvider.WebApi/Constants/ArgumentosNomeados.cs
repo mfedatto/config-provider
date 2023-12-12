@@ -14,5 +14,5 @@ public static class ArgumentosNomeados
     public const string VigenteEm = "vigente-em";
     public const string Lista = "lista";
     public const string PermiteNulo = "permite-nulo";
-    public const string IdPai = "id-pai";
+    public const string IdChavePai = "id-chave-pai";
 }

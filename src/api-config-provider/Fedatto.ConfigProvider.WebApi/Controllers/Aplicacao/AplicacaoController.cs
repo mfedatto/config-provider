@@ -2,7 +2,6 @@ using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.Wrappers;
 using Fedatto.ConfigProvider.WebApi.Constants;
-using Fedatto.ConfigProvider.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fedatto.ConfigProvider.WebApi.Controllers.Aplicacao;
@@ -36,7 +35,7 @@ public class AplicacaoController : Controller
 
         Response.Headers.Append(CabecalhosNomeados.VigenteEm, vigenteEm.Value.ToString("yyyy-MM-dd"));
 
-        return (await _application.BuscarAplicacoes(
+        return Ok((await _application.BuscarAplicacoes(
                     cancellationToken,
                     nome,
                     sigla,
@@ -46,8 +45,7 @@ public class AplicacaoController : Controller
                     skip,
                     limit)
                 .ConfigureAwait(false))
-            .Map(aplicacao => aplicacao.ToGetResponseModel())
-            .HttpOk();
+            .Map(aplicacao => aplicacao.ToGetResponseModel()));
     }
 
     [HttpPost(Rotas.AplicacoesPostAplicacao)]
@@ -61,8 +59,7 @@ public class AplicacaoController : Controller
             cancellationToken,
             aplicacao);
 
-        return aplicacao.ToPostResponseModel()
-            .HttpOk();
+        return Ok(aplicacao.ToPostResponseModel());
     }
 
     [HttpGet(Rotas.AplicacoesGetAplicacao)]
@@ -70,12 +67,11 @@ public class AplicacaoController : Controller
         CancellationToken cancellationToken,
         [FromRoute(Name = ArgumentosNomeados.AppId)] Guid appId)
     {
-        return (await _application.BuscarAplicacaoPorId(
+        return Ok((await _application.BuscarAplicacaoPorId(
                     cancellationToken,
                     appId)
                 .ConfigureAwait(false))
-            .ToGetResponseModel()
-            .HttpOk();
+            .ToGetResponseModel());
     }
 
     [HttpPut(Rotas.AplicacoesPutAplicacao)]
