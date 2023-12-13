@@ -1,3 +1,4 @@
+using Fedatto.ConfigProvider.Domain.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
 
