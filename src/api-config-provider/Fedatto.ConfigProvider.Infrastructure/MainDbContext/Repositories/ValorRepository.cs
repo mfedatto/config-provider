@@ -27,22 +27,22 @@ public class ValorRepository : IValorRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
         
-        return await _dbConnection.QueryAsync<IValor<T>>(
+        return await _dbConnection.QueryAsync<DbValor<T>>(
             $"""
              SELECT *
              FROM {nomeTabela}
              WHERE
-                 IdChave = @p_IdChave AND
-                 Habilitado = @p_Habilitado AND
-                 (VigenteDe IS NULL OR VigenteDe <= @p_VigenteEm::date) AND
-                 (VigenteAte IS NULL OR VigenteAte >= @p_VigenteEm::date)
+                 IdChave = @IdChave AND
+                 Habilitado = @Habilitado AND
+                 (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND
+                 (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date)
              ORDER BY Id;
              """,
             new
             {
-                p_IdChave = idChave,
-                p_Habilitado = habilitado,
-                p_VigenteEm = vigenteEm
+                IdChave = idChave,
+                Habilitado = habilitado,
+                VigenteEm = vigenteEm
             },
             transaction: _dbTransaction);
     }
@@ -133,4 +133,14 @@ public class ValorRepository : IValorRepository
             habilitado,
             "ValoresBinarioBase64");
     }
+}
+
+file record DbValor<T> : IValor<T>
+{
+    public int Id { get; set; }
+    public int IdChave { get; set; }
+    public required T Valor { get; set; }
+    public bool Habilitado { get; set; }
+    public DateTime VigenteDe { get; set; }
+    public DateTime VigenteAte { get; set; }
 }

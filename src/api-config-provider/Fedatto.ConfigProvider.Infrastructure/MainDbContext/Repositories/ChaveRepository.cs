@@ -27,7 +27,7 @@ public class ChaveRepository : IChaveRepository
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
-        Func<CancellationToken, int, ITipo?> buscarTipo,
+        Func<CancellationToken, int, ITipo> buscarTipo,
         string? nome = null,
         ITipo? tipo = null,
         bool? lista = null,
@@ -39,7 +39,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<DbChave>(
                 """
                 SELECT *
                 FROM Chaves
@@ -54,8 +54,8 @@ public class ChaveRepository : IChaveRepository
                     (VigenteDe IS NULL OR VigenteDe <= @VigenteEm::date) AND
                     (VigenteAte IS NULL OR VigenteAte >= @VigenteEm::date)
                 ORDER BY Nome
-                OFFSET @p_Skip
-                LIMIT @p_Limit;
+                OFFSET @Skip
+                LIMIT @Limit;
                 """,
                 new
                 {
@@ -126,11 +126,12 @@ public class ChaveRepository : IChaveRepository
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id,
-        Func<CancellationToken, int, ITipo?> buscarTipo)
+        Func<CancellationToken, int, ITipo> buscarTipo)
     {
+        if (buscarTipo is null) throw new ArgumentNullException(nameof(buscarTipo));
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<DbChave>(
                 """
                 SELECT *
                 FROM Chaves
@@ -160,7 +161,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<DbChave>(
                 """
                 INSERT INTO Chaves (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
                 VALUES (@AppId::uuid, @Nome, @IdTipo, @Lista, @PermiteNulo, @IdChavePai, @Habilitado, @VigenteDe::date, @VigenteAte::date)
@@ -193,7 +194,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<DbChave>(
                 """
                 UPDATE Chaves
                 SET
@@ -250,7 +251,7 @@ public class ChaveRepository : IChaveRepository
     }
 }
 
-file record Chave
+file record DbChave
 {
     public int Id { get; init; }
     public Guid AppId { get; init; }
@@ -268,23 +269,23 @@ file static class RepositoryExtensions
 {
     public static IChave Create(
         this ChaveFactory factory,
-        Chave chave,
+        DbChave dbChave,
         IAplicacao aplicacao,
-        ITipo? tipo)
+        ITipo tipo)
     {
         if (aplicacao is null) throw new AplicacaoNaoEncontradaException();
         if (tipo is null) throw new TipoNaoEncontradoException();
 
         return factory.Create(
-            chave.Id,
+            dbChave.Id,
             aplicacao,
-            chave.Nome,
+            dbChave.Nome,
             tipo,
-            chave.Lista,
-            chave.PermiteNulo,
-            chave.IdChavePai,
-            chave.Habilitado,
-            chave.VigenteDe,
-            chave.VigenteAte);
+            dbChave.Lista,
+            dbChave.PermiteNulo,
+            dbChave.IdChavePai,
+            dbChave.Habilitado,
+            dbChave.VigenteDe,
+            dbChave.VigenteAte);
     }
 }

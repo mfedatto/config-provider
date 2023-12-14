@@ -5,7 +5,7 @@ using Fedatto.ConfigProvider.Domain.Valor;
 
 namespace Fedatto.ConfigProvider.Domain.MainDbContext;
 
-public interface IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
     IAplicacaoRepository AplicacaoRepository { get; }
     ITipoRepository TipoRepository { get; }

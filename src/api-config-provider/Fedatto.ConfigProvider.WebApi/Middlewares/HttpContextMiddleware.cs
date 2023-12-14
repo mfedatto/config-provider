@@ -31,6 +31,10 @@ public class HttpContextMiddleware
         {
             await HandleException(context, uow, ex, 500);
         }
+        finally
+        {
+            uow.Dispose();
+        }
     }
 
     private async Task HandleException(HttpContext context, IUnitOfWork uow, HttpException httpException)

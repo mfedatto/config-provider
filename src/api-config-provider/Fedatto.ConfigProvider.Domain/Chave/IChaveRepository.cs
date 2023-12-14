@@ -9,7 +9,7 @@ public interface IChaveRepository
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
-        Func<CancellationToken, int, ITipo?> buscarTipo,
+        Func<CancellationToken, int, ITipo> buscarTipo,
         string? nome = null,
         ITipo? tipo = null,
         bool? lista = null,
@@ -32,7 +32,7 @@ public interface IChaveRepository
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
         int id,
-        Func<CancellationToken, int, ITipo?> buscarTipo);
+        Func<CancellationToken, int, ITipo> buscarTipo);
     Task<IChave> IncluirChave(
         CancellationToken cancellationToken,
         IChave chaveAIncluir);

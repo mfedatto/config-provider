@@ -26,7 +26,7 @@ public class TipoRepository : ITipoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _dbConnection.QueryAsync<Tipo>(
+        return await _dbConnection.QueryAsync<DbTipo>(
             """
             SELECT *
             FROM Tipos
@@ -77,7 +77,7 @@ public class TipoRepository : ITipoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Tipo>(
+        return (await _dbConnection.QueryAsync<DbTipo>(
                 """
                 SELECT *
                 FROM Tipos
@@ -93,7 +93,7 @@ public class TipoRepository : ITipoRepository
     }
 }
 
-file record Tipo : ITipo
+file record DbTipo : ITipo
 {
     public int Id { get; init; }
     public required string Nome { get; init; }

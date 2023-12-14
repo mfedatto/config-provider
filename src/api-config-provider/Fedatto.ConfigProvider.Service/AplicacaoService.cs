@@ -1,4 +1,3 @@
-using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
@@ -31,7 +30,9 @@ public class AplicacaoService : IAplicacaoService
             sigla,
             aka,
             habilitado,
-            vigenteEm);
+            vigenteEm,
+            skip,
+            limit);
     }
     
     public async Task<int> ContarAplicacoes(
@@ -58,15 +59,15 @@ public class AplicacaoService : IAplicacaoService
         await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
                 cancellationToken,
                 aplicacao.AppId)!
-            .ThenThrowIfNull<IAplicacao, AppIdEmUsoException>();
+            .ThenThrowIfNotNull<IAplicacao, AppIdEmUsoException>();
         await _uow.AplicacaoRepository.BuscarAplicacaoPorNome(
                 cancellationToken,
                 aplicacao.Nome)!
-            .ThenThrowIfNull<IAplicacao, NomeDeAplicacaoEmUsoException>();
+            .ThenThrowIfNotNull<IAplicacao, NomeDeAplicacaoEmUsoException>();
         await _uow.AplicacaoRepository.BuscarAplicacaoPorSigla(
                 cancellationToken,
                 aplicacao.Sigla)!
-            .ThenThrowIfNull<IAplicacao, SiglaDeAplicacaoEmUsoException>();
+            .ThenThrowIfNotNull<IAplicacao, SiglaDeAplicacaoEmUsoException>();
         
         await _uow.AplicacaoRepository.IncluirAplicacao(
             cancellationToken,

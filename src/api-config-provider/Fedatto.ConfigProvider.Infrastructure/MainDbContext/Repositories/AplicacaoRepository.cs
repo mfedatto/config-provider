@@ -30,7 +30,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _dbConnection.QueryAsync<Aplicacao>(
+        return await _dbConnection.QueryAsync<DbAplicacao>(
             """
             SELECT *
             FROM Aplicacoes
@@ -111,7 +111,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<DbAplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -132,7 +132,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<DbAplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -153,7 +153,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _dbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<DbAplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -209,7 +209,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     }
 }
 
-file record Aplicacao : IAplicacao
+file record DbAplicacao : IAplicacao
 {
     public Guid AppId { get; init; }
     public required string Nome { get; init; }

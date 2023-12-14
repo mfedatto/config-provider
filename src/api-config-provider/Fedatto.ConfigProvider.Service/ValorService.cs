@@ -52,6 +52,6 @@ public class ValorService : IValorService
             cancellationToken,
             aplicacao,
             idChave,
-            (ct, i) => _uow.TipoRepository.BuscarTipo(ct, i).Result);
+            (ct, i) => _uow.TipoRepository.BuscarTipo(ct, i).Result!);
     }
 }

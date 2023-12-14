@@ -14,7 +14,18 @@ public static class ExceptionsExtensions
 
         return result;
     }
-    
+
+    public static async Task<TResult> ThenThrowIfNotNull<TResult, TException>(
+        this Task<TResult> task)
+        where TException : Exception, new()
+    {
+        TResult result = await task.ConfigureAwait(false);
+        
+        if (result is not null) throw new TException();
+
+        return result;
+    }
+
     public static async Task<TResult> ThenThrowIfNullOrUnavailable<TResult, TException>(
         this Task<TResult> task,
         Func<TResult, bool> available)
