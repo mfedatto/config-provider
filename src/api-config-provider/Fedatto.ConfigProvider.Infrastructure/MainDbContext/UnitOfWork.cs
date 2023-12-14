@@ -1,51 +1,89 @@
 using System.Data;
+using System.Data.Common;
 using Fedatto.ConfigProvider.Domain.AppSettings;
+using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Npgsql;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext;
 
-public class UnitOfWork : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {
-    private readonly DatabaseConfig _config;
-    private IDbTransaction? _transaction;
+    private DbTransaction? _transaction;
+    private bool _disposed = false;
 
-    public IDbConnection DbConnection { get; }
+    public DbConnection DbConnection { get; }
 
     public UnitOfWork(
         DatabaseConfig config)
     {
-        _config = config;
-        
         NpgsqlConnectionStringBuilder connectionStringBuilder = new(
-            _config.ConnectionString)
+            config.ConnectionString)
         {
-            IncludeErrorDetail = _config.IncludeErrorDetail
+            IncludeErrorDetail = config.IncludeErrorDetail
         };
-        
+
         DbConnection = new NpgsqlConnection(connectionStringBuilder.ToString());
-
-        DbConnection.Open();
     }
 
-    public void BeginTransaction()
+    public async Task BeginTransaction()
     {
-        _transaction = DbConnection.BeginTransaction();
+        if (!ConnectionState.Open.Equals(DbConnection.State))
+        {
+            await DbConnection.OpenAsync();
+        }
+
+        if (_transaction is not null)
+        {
+            throw new ConexaoEmUsoPorOutraTransacaoException();
+        }
+
+
+        _transaction = await DbConnection.BeginTransactionAsync();
     }
 
-    public void Commit()
+    public async Task Commit()
     {
-        _transaction?.Commit();
+        if (_transaction is null)
+        {
+            throw new ConexaoSemTransacaoException();
+        }
+
+        await _transaction.CommitAsync();
     }
 
-    public void Rollback()
+    public async Task Rollback()
     {
-        _transaction?.Rollback();
+        if (_transaction is null)
+        {
+            throw new ConexaoSemTransacaoException();
+        }
+
+        await _transaction.RollbackAsync();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _transaction?.Dispose();
+                DbConnection.Dispose();
+            }
+
+            _disposed = true;
+        }
     }
 
     public void Dispose()
     {
-        _transaction?.Dispose();
-        DbConnection.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~UnitOfWork()
+    {
+        Dispose(false);
     }
 }

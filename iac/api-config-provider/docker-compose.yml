@@ -1,0 +1,57 @@
+version: '3.8'
+
+volumes:
+
+  postgres_data: {}
+  prometheus_data: {}
+  grafana_data: {}
+
+services:
+
+  config-provider-postgres:
+    image: postgres:latest
+    container_name: config-provider-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: 'config_provider'
+      POSTGRES_PASSWORD: 'config_provider'
+      POSTGRES_DB: 'config_provider'
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  config-provider-prometheus:
+    image: prom/prometheus:latest
+    container_name: config-provider-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+#    ports:
+#      - 9090:9090
+    network_mode: host
+    restart: unless-stopped
+
+  config-provider-grafana:
+    image: grafana/grafana
+    container_name: config-provider-grafana
+    user: "472"
+    depends_on:
+      - config-provider-prometheus
+    network_mode: host
+#    ports:
+#      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    restart: unless-stopped
+
+  config-provider-jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: config-provider-jaeger
+    network_mode: host

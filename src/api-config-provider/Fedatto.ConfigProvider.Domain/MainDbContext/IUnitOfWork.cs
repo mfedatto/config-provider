@@ -1,12 +1,12 @@
-using System.Data;
+using System.Data.Common;
 
 namespace Fedatto.ConfigProvider.Domain.MainDbContext;
 
 public interface IUnitOfWork
 {
-    IDbConnection DbConnection { get; }
+    DbConnection DbConnection { get; }
 
-    void BeginTransaction();
-    void Commit();
-    void Rollback();
+    Task BeginTransaction();
+    Task Commit();
+    Task Rollback();
 }

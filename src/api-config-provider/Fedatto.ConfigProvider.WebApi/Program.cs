@@ -1,4 +1,4 @@
-using Fedatto.ConfigProvider.CrossCutting.CompositionRoot;
+using Fedatto.ConfigProvider.CrossCutting.CompositionRoot.Extensions;
 using Fedatto.ConfigProvider.WebApi.Extensions;
 
 WebApplication.CreateBuilder(args)
