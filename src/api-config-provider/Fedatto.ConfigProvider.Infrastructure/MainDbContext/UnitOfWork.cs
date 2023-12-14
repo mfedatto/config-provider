@@ -1,65 +1,66 @@
 using System.Data;
 using System.Data.Common;
+using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.AppSettings;
+using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
 using Fedatto.ConfigProvider.Domain.MainDbContext;
+using Fedatto.ConfigProvider.Domain.Tipo;
+using Fedatto.ConfigProvider.Domain.Valor;
+using Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 using Npgsql;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext;
 
 public sealed class UnitOfWork : IUnitOfWork
 {
-    private DbTransaction? _transaction;
-    private bool _disposed = false;
-
-    public DbConnection DbConnection { get; }
+    private readonly ChaveFactory _chaveFactory;
+    private readonly DbConnection _dbConnection;
+    private DbTransaction? _dbTransaction;
+    private bool _disposed;
 
     public UnitOfWork(
-        DatabaseConfig config)
+        DatabaseConfig config,
+        ChaveFactory chaveFactory)
     {
-        NpgsqlConnectionStringBuilder connectionStringBuilder = new(
-            config.ConnectionString)
-        {
-            IncludeErrorDetail = config.IncludeErrorDetail
-        };
-
-        DbConnection = new NpgsqlConnection(connectionStringBuilder.ToString());
+        _chaveFactory = chaveFactory;
+        _dbConnection = new NpgsqlConnection(
+                new NpgsqlConnectionStringBuilder(
+                        config.ConnectionString)
+                    {
+                        IncludeErrorDetail = config.IncludeErrorDetail
+                    }
+                    .ToString()
+            );
     }
 
-    public async Task BeginTransaction()
+    public IAplicacaoRepository AplicacaoRepository => new AplicacaoRepository(_dbConnection, _dbTransaction!);
+    public ITipoRepository TipoRepository => new TipoRepository(_dbConnection, _dbTransaction!);
+    public IChaveRepository ChaveRepository => new ChaveRepository(_dbConnection, _dbTransaction!, _chaveFactory);
+    public IValorRepository ValorRepository => new ValorRepository(_dbConnection, _dbTransaction!);
+
+    public async Task BeginTransactionAsync()
     {
-        if (!ConnectionState.Open.Equals(DbConnection.State))
-        {
-            await DbConnection.OpenAsync();
-        }
+        if (_dbTransaction is not null) throw new ConexaoEmUsoPorOutraTransacaoException();
 
-        if (_transaction is not null)
-        {
-            throw new ConexaoEmUsoPorOutraTransacaoException();
-        }
+        if (!ConnectionState.Open.Equals(_dbConnection.State)) await _dbConnection.OpenAsync();
 
-
-        _transaction = await DbConnection.BeginTransactionAsync();
+        _dbTransaction = await _dbConnection.BeginTransactionAsync();
     }
 
-    public async Task Commit()
+    public async Task CommitAsync()
     {
-        if (_transaction is null)
-        {
-            throw new ConexaoSemTransacaoException();
-        }
+        if (_dbTransaction is null) throw new ConexaoSemTransacaoException();
 
-        await _transaction.CommitAsync();
+        await _dbTransaction.CommitAsync();
+        await _dbTransaction.DisposeAsync();
+
+        _dbTransaction = null;
     }
 
-    public async Task Rollback()
+    public async Task RollbackAsync()
     {
-        if (_transaction is null)
-        {
-            throw new ConexaoSemTransacaoException();
-        }
-
-        await _transaction.RollbackAsync();
+        await _dbTransaction?.RollbackAsync()!;
     }
 
     private void Dispose(bool disposing)
@@ -68,8 +69,8 @@ public sealed class UnitOfWork : IUnitOfWork
         {
             if (disposing)
             {
-                _transaction?.Dispose();
-                DbConnection.Dispose();
+                _dbTransaction?.Dispose();
+                _dbConnection.Dispose();
             }
 
             _disposed = true;

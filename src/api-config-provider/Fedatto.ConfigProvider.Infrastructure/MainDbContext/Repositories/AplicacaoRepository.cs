@@ -1,17 +1,21 @@
+using System.Data.Common;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
-using Fedatto.ConfigProvider.Domain.MainDbContext;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 
 public class AplicacaoRepository : IAplicacaoRepository
 {
-    private readonly IUnitOfWork _uow;
+    private readonly DbConnection _dbConnection;
+    private readonly DbTransaction _dbTransaction;
 
-    public AplicacaoRepository(IUnitOfWork uow)
+    public AplicacaoRepository(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction)
     {
-        _uow = uow;
+        _dbConnection = dbConnection;
+        _dbTransaction = dbTransaction;
     }
 
     public async Task<IEnumerable<IAplicacao>> BuscarAplicacoes(
@@ -25,8 +29,8 @@ public class AplicacaoRepository : IAplicacaoRepository
         int? limit = null)
     {
         cancellationToken.ThrowIfClientClosedRequest();
-        
-        return await _uow.DbConnection.QueryAsync<Aplicacao>(
+
+        return await _dbConnection.QueryAsync<Aplicacao>(
             """
             SELECT *
             FROM Aplicacoes
@@ -49,7 +53,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss"),
                 Skip = skip,
                 Limit = limit
-            });
+            },
+            _dbTransaction);
     }
 
     public async Task<int> ContarAplicacoes(
@@ -62,7 +67,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _uow.DbConnection.ExecuteScalarAsync<int>(
+        return await _dbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
             FROM Aplicacoes
@@ -80,7 +85,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 Aka = aka?.ToLower(),
                 Habilitado = habilitado,
                 VigenteEm = vigenteEm?.ToString("yyyy-MM-dd HH:mm:ss")
-            });
+            },
+            _dbTransaction);
     }
 
     public async Task IncluirAplicacao(
@@ -89,13 +95,14 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        await _uow.DbConnection.ExecuteAsync(
+        await _dbConnection.ExecuteAsync(
             """
             INSERT INTO Aplicacoes (AppId, Nome, Sigla, Aka, Habilitado, VigenteDe, VigenteAte)
             VALUES (@AppId, @Nome, @Sigla, @Aka, @Habilitado, @VigenteDe, @VigenteAte)
             RETURNING *;
             """,
-            aplicacao);
+            aplicacao,
+            _dbTransaction);
     }
 
     public async Task<IAplicacao?> BuscarAplicacaoPorId(
@@ -104,7 +111,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -114,7 +121,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 new
                 {
                     AppId = appId
-                }))
+                },
+                _dbTransaction))
             .SingleOrDefault<IAplicacao>();
     }
 
@@ -124,7 +132,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -134,7 +142,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 new
                 {
                     Nome = nome.ToLower()
-                }))
+                },
+                _dbTransaction))
             .SingleOrDefault<IAplicacao>();
     }
 
@@ -144,7 +153,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Aplicacao>(
+        return (await _dbConnection.QueryAsync<Aplicacao>(
                 """
                 SELECT *
                 FROM Aplicacoes
@@ -154,7 +163,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 new
                 {
                     Sigla = sigla.ToLower()
-                }))
+                },
+                _dbTransaction))
             .SingleOrDefault<IAplicacao>();
     }
 
@@ -164,7 +174,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        await _uow.DbConnection.ExecuteAsync(
+        await _dbConnection.ExecuteAsync(
             """
             UPDATE Aplicacoes
             SET
@@ -176,7 +186,8 @@ public class AplicacaoRepository : IAplicacaoRepository
                 VigenteAte = @VigenteAte
             WHERE AppId = @AppId;
             """,
-            aplicacao);
+            aplicacao,
+            _dbTransaction);
     }
 
     public async Task ExcluirAplicacao(
@@ -185,7 +196,7 @@ public class AplicacaoRepository : IAplicacaoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        await _uow.DbConnection.ExecuteAsync(
+        await _dbConnection.ExecuteAsync(
             """
             DELETE FROM Aplicacoes
             WHERE AppId = @AppId;
@@ -193,7 +204,8 @@ public class AplicacaoRepository : IAplicacaoRepository
             new
             {
                 AppId = appId
-            });
+            },
+            _dbTransaction);
     }
 }
 

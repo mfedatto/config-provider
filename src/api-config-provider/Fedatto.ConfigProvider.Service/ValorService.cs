@@ -1,5 +1,6 @@
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
+using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Valor;
 using Fedatto.HttpExceptions;
 
@@ -7,18 +8,12 @@ namespace Fedatto.ConfigProvider.Service;
 
 public class ValorService : IValorService
 {
-    private readonly IValorRepository _repository;
-    private readonly IAplicacaoRepository _aplicacaoRepository;
-    private readonly IChaveRepository _chaveRepository;
+    private readonly IUnitOfWork _uow;
 
     public ValorService(
-        IValorRepository repository,
-        IAplicacaoRepository aplicacaoRepository,
-        IChaveRepository chaveRepository)
+        IUnitOfWork uow)
     {
-        _repository = repository;
-        _aplicacaoRepository = aplicacaoRepository;
-        _chaveRepository = chaveRepository;
+        _uow = uow;
     }
 
     public async Task<IEnumerable<IValor<object>>> BuscarValores(
@@ -29,12 +24,12 @@ public class ValorService : IValorService
     {
         return chave.Tipo.Id switch
         {
-            3 => await _repository.BuscarValoresDouble(cancellationToken, chave.Id, vigenteEm, habilitado),
-            5 => await _repository.BuscarValoresString(cancellationToken, chave.Id, vigenteEm, habilitado),
-            7 => await _repository.BuscarValoresBool(cancellationToken, chave.Id, vigenteEm, habilitado),
-            11 => await _repository.BuscarValoresDatas(cancellationToken, chave.Id, vigenteEm, habilitado),
-            13 => await _repository.BuscarValoresJson(cancellationToken, chave.Id, vigenteEm, habilitado),
-            17 => await _repository.BuscarValoresBinaryB64(cancellationToken, chave.Id, vigenteEm, habilitado),
+            3 => await _uow.ValorRepository.BuscarValoresDouble(cancellationToken, chave.Id, vigenteEm, habilitado),
+            5 => await _uow.ValorRepository.BuscarValoresString(cancellationToken, chave.Id, vigenteEm, habilitado),
+            7 => await _uow.ValorRepository.BuscarValoresBool(cancellationToken, chave.Id, vigenteEm, habilitado),
+            11 => await _uow.ValorRepository.BuscarValoresDatas(cancellationToken, chave.Id, vigenteEm, habilitado),
+            13 => await _uow.ValorRepository.BuscarValoresJson(cancellationToken, chave.Id, vigenteEm, habilitado),
+            17 => await _uow.ValorRepository.BuscarValoresBinaryB64(cancellationToken, chave.Id, vigenteEm, habilitado),
             _ => throw new Http501NaoImplementadoException()
         };
     }
@@ -43,7 +38,7 @@ public class ValorService : IValorService
         CancellationToken cancellationToken,
         Guid appId)
     {
-        return await _aplicacaoRepository.BuscarAplicacaoPorId(
+        return await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
             cancellationToken,
             appId);
     }
@@ -53,9 +48,10 @@ public class ValorService : IValorService
         IAplicacao aplicacao,
         int idChave)
     {
-        return await _chaveRepository.BuscarChavePorId(
+        return await _uow.ChaveRepository.BuscarChavePorId(
             cancellationToken,
             aplicacao,
-            idChave);
+            idChave,
+            (ct, i) => _uow.TipoRepository.BuscarTipo(ct, i).Result);
     }
 }

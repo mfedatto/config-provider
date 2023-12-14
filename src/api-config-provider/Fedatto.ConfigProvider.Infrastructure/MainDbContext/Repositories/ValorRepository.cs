@@ -1,18 +1,21 @@
+using System.Data.Common;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Exceptions;
-using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Valor;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 
 public class ValorRepository : IValorRepository
 {
-    private readonly IUnitOfWork _uow;
+    private readonly DbConnection _dbConnection;
+    private readonly DbTransaction _dbTransaction;
 
     public ValorRepository(
-        IUnitOfWork uow)
+        DbConnection dbConnection,
+        DbTransaction dbTransaction)
     {
-        _uow = uow;
+        _dbConnection = dbConnection;
+        _dbTransaction = dbTransaction;
     }
 
     private async Task<IEnumerable<IValor<T>>> BuscarValores<T>(
@@ -24,7 +27,7 @@ public class ValorRepository : IValorRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
         
-        return await _uow.DbConnection.QueryAsync<IValor<T>>(
+        return await _dbConnection.QueryAsync<IValor<T>>(
             $"""
              SELECT *
              FROM {nomeTabela}
@@ -40,7 +43,8 @@ public class ValorRepository : IValorRepository
                 p_IdChave = idChave,
                 p_Habilitado = habilitado,
                 p_VigenteEm = vigenteEm
-            });
+            },
+            transaction: _dbTransaction);
     }
 
     public async Task<IEnumerable<IValor<object>>> BuscarValoresDouble(

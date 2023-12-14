@@ -2,18 +2,19 @@ using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
+using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.Service;
 
 public class ChaveService : IChaveService
 {
-    private readonly IChaveRepository _repository;
+    private readonly IUnitOfWork _uow;
 
     public ChaveService(
-        IChaveRepository repository)
+        IUnitOfWork uow)
     {
-        _repository = repository;
+        _uow = uow;
     }
     
     public async Task<IEnumerable<IChave>> BuscarChaves(
@@ -29,10 +30,13 @@ public class ChaveService : IChaveService
         int? skip = 0,
         int? limit = null)
     {
-        return await _repository.BuscarChaves(
+        return await _uow.ChaveRepository.BuscarChaves(
             cancellationToken,
             aplicacao,
             vigenteEm,
+            (ct, i)
+                => _uow.TipoRepository.BuscarTipo(ct, i)
+                    .Result,
             nome,
             tipo,
             lista,
@@ -54,7 +58,7 @@ public class ChaveService : IChaveService
         int? idChavePai = null,
         bool habilitado = true)
     {
-        return await _repository.ContarChaves(
+        return await _uow.ChaveRepository.ContarChaves(
             cancellationToken,
             aplicacao,
             vigenteEm,
@@ -75,10 +79,13 @@ public class ChaveService : IChaveService
         
         try
         {
-            result =  await _repository.BuscarChavePorId(
+            result =  await _uow.ChaveRepository.BuscarChavePorId(
                 cancellationToken,
                 aplicacao,
-                id);
+                id,
+                (ct, i)
+                    => _uow.TipoRepository.BuscarTipo(ct, i)
+                        .Result);
             
             if (result is null) throw new ChaveNaoEncontradaException();
         }
@@ -94,7 +101,7 @@ public class ChaveService : IChaveService
         CancellationToken cancellationToken,
         IChave chave)
     {
-        return await _repository.IncluirChave(
+        return await _uow.ChaveRepository.IncluirChave(
             cancellationToken,
             chave);
     }
@@ -103,7 +110,7 @@ public class ChaveService : IChaveService
         CancellationToken cancellationToken,
         IChave chaveAAlterar)
     {
-        return await _repository.AlterarChave(
+        return await _uow.ChaveRepository.AlterarChave(
             cancellationToken,
             chaveAAlterar);
     }
@@ -112,7 +119,7 @@ public class ChaveService : IChaveService
         CancellationToken cancellationToken,
         int idChave)
     {
-        await _repository.ExcluirChave(
+        await _uow.ChaveRepository.ExcluirChave(
             cancellationToken,
             idChave);
     }

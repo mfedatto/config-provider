@@ -1,17 +1,18 @@
 using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Exceptions;
+using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.Service;
 
 public class TipoService : ITipoService
 {
-    private readonly ITipoRepository _repository;
+    private readonly IUnitOfWork _uow;
 
     public TipoService(
-        ITipoRepository repository)
+        IUnitOfWork uow)
     {
-        _repository = repository;
+        _uow = uow;
     }
     
     public async Task<IEnumerable<ITipo>> BuscarTipos(
@@ -20,7 +21,7 @@ public class TipoService : ITipoService
         string? nome = null,
         bool? habilitado = null)
     {
-        return await _repository.BuscarTipos(
+        return await _uow.TipoRepository.BuscarTipos(
             cancellationToken,
             id,
             nome,
@@ -33,7 +34,7 @@ public class TipoService : ITipoService
         string? nome = null,
         bool? habilitado = null)
     {
-        return await _repository.ContarTipos(
+        return await _uow.TipoRepository.ContarTipos(
             cancellationToken,
             id,
             nome,
@@ -48,7 +49,7 @@ public class TipoService : ITipoService
         
         try
         {
-            result =  await _repository.BuscarTipo(
+            result =  await _uow.TipoRepository.BuscarTipo(
                 cancellationToken,
                 id);
             

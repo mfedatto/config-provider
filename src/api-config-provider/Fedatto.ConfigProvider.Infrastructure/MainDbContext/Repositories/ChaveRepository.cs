@@ -1,32 +1,33 @@
+using System.Data.Common;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Chave;
 using Fedatto.ConfigProvider.Domain.Exceptions;
-using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 
 public class ChaveRepository : IChaveRepository
 {
-    private readonly IUnitOfWork _uow;
+    private readonly DbConnection _dbConnection;
+    private readonly DbTransaction _dbTransaction;
     private readonly ChaveFactory _factory;
-    private readonly ITipoRepository _tipoRepository;
 
     public ChaveRepository(
-        IUnitOfWork uow,
-        ChaveFactory factory,
-        ITipoRepository tipoRepository)
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        ChaveFactory factory)
     {
-        _uow = uow;
+        _dbConnection = dbConnection;
+        _dbTransaction = dbTransaction;
         _factory = factory;
-        _tipoRepository = tipoRepository;
     }
 
     public async Task<IEnumerable<IChave>> BuscarChaves(
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
         DateTime vigenteEm,
+        Func<CancellationToken, int, ITipo?> buscarTipo,
         string? nome = null,
         ITipo? tipo = null,
         bool? lista = null,
@@ -38,7 +39,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<Chave>(
                 """
                 SELECT *
                 FROM Chaves
@@ -68,15 +69,15 @@ public class ChaveRepository : IChaveRepository
                     Habilitado = habilitado,
                     Skip = skip,
                     Limit = limit
-                }))
+                },
+                transaction: _dbTransaction))
             .Select(chaveEncontrada
                 => _factory.Create(
                     chaveEncontrada,
                     aplicacao,
-                    tipo ?? _tipoRepository.BuscarTipo(
-                            cancellationToken,
-                            chaveEncontrada.IdTipo)
-                        .Result!));
+                    tipo ?? buscarTipo(
+                        cancellationToken,
+                        chaveEncontrada.IdTipo)));
     }
 
     public async Task<int> ContarChaves(
@@ -92,7 +93,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _uow.DbConnection.ExecuteScalarAsync<int>(
+        return await _dbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
             FROM Chaves
@@ -117,17 +118,19 @@ public class ChaveRepository : IChaveRepository
                 PermiteNulo = permiteNulo,
                 IdChavePai = idChavePai,
                 Habilitado = habilitado
-            });
+            },
+            transaction: _dbTransaction);
     }
 
     public async Task<IChave> BuscarChavePorId(
         CancellationToken cancellationToken,
         IAplicacao aplicacao,
-        int id)
+        int id,
+        Func<CancellationToken, int, ITipo?> buscarTipo)
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<Chave>(
                 """
                 SELECT *
                 FROM Chaves
@@ -139,15 +142,15 @@ public class ChaveRepository : IChaveRepository
                 {
                     aplicacao.AppId,
                     Id = id
-                }))
+                },
+                transaction: _dbTransaction))
             .Select(chaveEncontrada
                 => _factory.Create(
                     chaveEncontrada,
                     aplicacao,
-                    _tipoRepository.BuscarTipo(
-                            cancellationToken,
-                            chaveEncontrada.IdTipo)
-                        .Result!))
+                    buscarTipo(
+                        cancellationToken,
+                        chaveEncontrada.IdTipo)))
             .SingleOrDefault()!;
     }
 
@@ -157,7 +160,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<Chave>(
                 """
                 INSERT INTO Chaves (AppId, Nome, IdTipo, Lista, PermiteNulo, IdChavePai, Habilitado, VigenteDe, VigenteAte)
                 VALUES (@AppId::uuid, @Nome, @IdTipo, @Lista, @PermiteNulo, @IdChavePai, @Habilitado, @VigenteDe::date, @VigenteAte::date)
@@ -174,7 +177,8 @@ public class ChaveRepository : IChaveRepository
                     chaveAIncluir.Habilitado,
                     chaveAIncluir.VigenteDe,
                     chaveAIncluir.VigenteAte
-                }))
+                },
+                transaction: _dbTransaction))
             .Select(chaveIncluida
                 => _factory.Create(
                     chaveIncluida,
@@ -189,7 +193,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Chave>(
+        return (await _dbConnection.QueryAsync<Chave>(
                 """
                 UPDATE Chaves
                 SET
@@ -217,7 +221,8 @@ public class ChaveRepository : IChaveRepository
                     chaveAAlterar.Habilitado,
                     chaveAAlterar.VigenteDe,
                     chaveAAlterar.VigenteAte
-                }))
+                },
+                transaction: _dbTransaction))
             .Select(chaveAlterada =>
                 _factory.Create(
                     chaveAlterada,
@@ -232,7 +237,7 @@ public class ChaveRepository : IChaveRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        await _uow.DbConnection.ExecuteAsync(
+        await _dbConnection.ExecuteAsync(
             """
             DELETE FROM Chaves
             WHERE Id = @Id;
@@ -240,7 +245,8 @@ public class ChaveRepository : IChaveRepository
             new
             {
                 Id = idChave
-            });
+            },
+            transaction: _dbTransaction);
     }
 }
 
@@ -264,7 +270,7 @@ file static class RepositoryExtensions
         this ChaveFactory factory,
         Chave chave,
         IAplicacao aplicacao,
-        ITipo tipo)
+        ITipo? tipo)
     {
         if (aplicacao is null) throw new AplicacaoNaoEncontradaException();
         if (tipo is null) throw new TipoNaoEncontradoException();

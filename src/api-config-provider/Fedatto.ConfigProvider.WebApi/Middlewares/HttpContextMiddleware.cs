@@ -17,11 +17,11 @@ public class HttpContextMiddleware
     {
         try
         {
-            await uow.BeginTransaction();
+            await uow.BeginTransactionAsync();
 
             await _next(context);
 
-            await uow.Commit();
+            await uow.CommitAsync();
         }
         catch (HttpException ex)
         {
@@ -40,7 +40,7 @@ public class HttpContextMiddleware
 
     private async Task HandleException(HttpContext context, IUnitOfWork uow, Exception exception, int statusCode)
     {
-        await uow.Rollback();
+        await uow.RollbackAsync();
         
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;

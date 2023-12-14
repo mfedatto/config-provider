@@ -1,16 +1,18 @@
 using Fedatto.HttpExceptions;
 using Fedatto.ConfigProvider.Domain.Aplicacao;
 using Fedatto.ConfigProvider.Domain.Exceptions;
+using Fedatto.ConfigProvider.Domain.MainDbContext;
 
 namespace Fedatto.ConfigProvider.Service;
 
 public class AplicacaoService : IAplicacaoService
 {
-    private readonly IAplicacaoRepository _repository;
+    private readonly IUnitOfWork _uow;
 
-    public AplicacaoService(IAplicacaoRepository repository)
+    public AplicacaoService(
+        IUnitOfWork uow)
     {
-        _repository = repository;
+        _uow = uow;
     }
     
     public async Task<IEnumerable<IAplicacao>> BuscarAplicacoes(
@@ -23,7 +25,7 @@ public class AplicacaoService : IAplicacaoService
         int? skip = 0,
         int? limit = null)
     {
-        return await _repository.BuscarAplicacoes(
+        return await _uow.AplicacaoRepository.BuscarAplicacoes(
             cancellationToken,
             nome,
             sigla,
@@ -40,7 +42,7 @@ public class AplicacaoService : IAplicacaoService
         bool? habilitado = null,
         DateTime? vigenteEm = null)
     {
-        return await _repository.ContarAplicacoes(
+        return await _uow.AplicacaoRepository.ContarAplicacoes(
             cancellationToken,
             nome,
             sigla,
@@ -53,20 +55,20 @@ public class AplicacaoService : IAplicacaoService
         CancellationToken cancellationToken,
         IAplicacao aplicacao)
     {
-        await _repository.BuscarAplicacaoPorId(
+        await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
                 cancellationToken,
                 aplicacao.AppId)!
             .ThenThrowIfNull<IAplicacao, AppIdEmUsoException>();
-        await _repository.BuscarAplicacaoPorNome(
+        await _uow.AplicacaoRepository.BuscarAplicacaoPorNome(
                 cancellationToken,
                 aplicacao.Nome)!
             .ThenThrowIfNull<IAplicacao, NomeDeAplicacaoEmUsoException>();
-        await _repository.BuscarAplicacaoPorSigla(
+        await _uow.AplicacaoRepository.BuscarAplicacaoPorSigla(
                 cancellationToken,
                 aplicacao.Sigla)!
             .ThenThrowIfNull<IAplicacao, SiglaDeAplicacaoEmUsoException>();
         
-        await _repository.IncluirAplicacao(
+        await _uow.AplicacaoRepository.IncluirAplicacao(
             cancellationToken,
             aplicacao);
     }
@@ -79,7 +81,7 @@ public class AplicacaoService : IAplicacaoService
         
         try
         {
-            result =  await _repository.BuscarAplicacaoPorId(
+            result =  await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
                 cancellationToken,
                 appId);
             
@@ -97,12 +99,12 @@ public class AplicacaoService : IAplicacaoService
         CancellationToken cancellationToken,
         IAplicacao aplicacao)
     {
-        await _repository.BuscarAplicacaoPorId(
+        await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
                 cancellationToken,
                 aplicacao.AppId)!
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _repository.AtualizarAplicacao(
+        await _uow.AplicacaoRepository.AtualizarAplicacao(
             cancellationToken,
             aplicacao);
     }
@@ -111,12 +113,12 @@ public class AplicacaoService : IAplicacaoService
         CancellationToken cancellationToken,
         Guid appId)
     {
-        await _repository.BuscarAplicacaoPorId(
+        await _uow.AplicacaoRepository.BuscarAplicacaoPorId(
                 cancellationToken,
                 appId)!
             .ThenThrowIfNull<IAplicacao, AplicacaoNaoEncontradaException>();
 
-        await _repository.ExcluirAplicacao(
+        await _uow.AplicacaoRepository.ExcluirAplicacao(
             cancellationToken,
             appId);
     }

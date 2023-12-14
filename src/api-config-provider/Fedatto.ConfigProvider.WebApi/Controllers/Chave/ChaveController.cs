@@ -79,7 +79,7 @@ public class ChaveController : Controller
                 appId)
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
-        ITipo tipo = await _application.BuscarTipoPorId(
+        ITipo? tipo = await _application.BuscarTipoPorId(
                 cancellationToken,
                 requestModel.IdTipo)
             .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)
@@ -131,7 +131,7 @@ public class ChaveController : Controller
                 requestModel.AppId)
             .ThenThrowIfNullOrUnavailable<IAplicacao, AplicacaoNaoEncontradaException>(result => result.Habilitado)
             .ConfigureAwait(false);
-        ITipo tipo = await _application.BuscarTipoPorId(
+        ITipo? tipo = await _application.BuscarTipoPorId(
                 cancellationToken,
                 requestModel.IdTipo)
             .ThenThrowIfNullOrUnavailable<ITipo, TipoNaoEncontradoException>(result => result.Habilitado)

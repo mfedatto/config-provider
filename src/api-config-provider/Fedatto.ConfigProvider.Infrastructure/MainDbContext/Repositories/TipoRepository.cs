@@ -1,20 +1,23 @@
+using System.Data.Common;
 using Dapper;
 using Fedatto.ConfigProvider.Domain.Exceptions;
-using Fedatto.ConfigProvider.Domain.MainDbContext;
 using Fedatto.ConfigProvider.Domain.Tipo;
 
 namespace Fedatto.ConfigProvider.Infrastructure.MainDbContext.Repositories;
 
 public class TipoRepository : ITipoRepository
 {
-    private readonly IUnitOfWork _uow;
+    private readonly DbConnection _dbConnection;
+    private readonly DbTransaction _dbTransaction;
 
     public TipoRepository(
-        IUnitOfWork uow)
+        DbConnection dbConnection,
+        DbTransaction dbTransaction)
     {
-        _uow = uow;
+        _dbConnection = dbConnection;
+        _dbTransaction = dbTransaction;
     }
-    
+
     public async Task<IEnumerable<ITipo>> BuscarTipos(
         CancellationToken cancellationToken,
         int? id = null,
@@ -23,7 +26,7 @@ public class TipoRepository : ITipoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _uow.DbConnection.QueryAsync<Tipo>(
+        return await _dbConnection.QueryAsync<Tipo>(
             """
             SELECT *
             FROM Tipos
@@ -38,7 +41,8 @@ public class TipoRepository : ITipoRepository
                 Id = id,
                 Nome = nome?.ToLower(),
                 Habilitado = habilitado
-            });
+            },
+            _dbTransaction);
     }
 
     public async Task<int> ContarTipos(
@@ -49,7 +53,7 @@ public class TipoRepository : ITipoRepository
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return await _uow.DbConnection.ExecuteScalarAsync<int>(
+        return await _dbConnection.ExecuteScalarAsync<int>(
             """
             SELECT COUNT(*)
             FROM Tipos
@@ -63,26 +67,28 @@ public class TipoRepository : ITipoRepository
                 Id = id,
                 Nome = nome?.ToLower(),
                 Habilitado = habilitado
-            });
+            },
+            _dbTransaction);
     }
-    
+
     public async Task<ITipo?> BuscarTipo(
         CancellationToken cancellationToken,
         int id)
     {
         cancellationToken.ThrowIfClientClosedRequest();
 
-        return (await _uow.DbConnection.QueryAsync<Tipo>(
-            """
-            SELECT *
-            FROM Tipos
-            WHERE
-                Id = @Id;
-            """,
-            new
-            {
-                Id = id
-            }))
+        return (await _dbConnection.QueryAsync<Tipo>(
+                """
+                SELECT *
+                FROM Tipos
+                WHERE
+                    Id = @Id;
+                """,
+                new
+                {
+                    Id = id
+                },
+                _dbTransaction))
             .SingleOrDefault<ITipo>()!;
     }
 }

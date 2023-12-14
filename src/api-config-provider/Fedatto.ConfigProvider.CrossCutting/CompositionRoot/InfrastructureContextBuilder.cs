@@ -15,9 +15,5 @@ public class InfrastructureContextBuilder : IContextBuilderInstaller
     public void Install(WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-        builder.Services.AddScoped<IAplicacaoRepository, AplicacaoRepository>();
-        builder.Services.AddScoped<ITipoRepository, TipoRepository>();
-        builder.Services.AddScoped<IChaveRepository, ChaveRepository>();
-        builder.Services.AddScoped<IValorRepository, ValorRepository>();
     }
 }
